@@ -1,0 +1,31 @@
+{
+  "name": "amam-student-rideshare",
+  "version": "1.0.0",
+  "description": "Student-only ride-sharing platform with real-time tracking and chat",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "init-db": "node init-database.js"
+  },
+  "keywords": [
+    "rideshare",
+    "student",
+    "university",
+    "socket.io",
+    "real-time"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.11.3",
+    "socket.io": "^4.6.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Amam</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #1e3a8a;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e40af, #2563eb);
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+        }
+
+        .user-info h2 {
+            font-size: 1.2rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .user-info p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #2563eb;
+        }
+
+        /* Main Container */
+        .container {
+            display: grid;
+            grid-template-columns: 400px 1fr 350px;
+            height: calc(100vh - 100px);
+            gap: 0;
+        }
+
+        /* Ride Request Panel */
+        .ride-panel {
+            background: white;
+            padding: 2rem;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #1e40af;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #1e3a8a;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        select.form-input {
+            cursor: pointer;
+        }
+
+        .request-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .request-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+        }
+
+        .request-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .cancel-btn {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            margin-top: 0.5rem;
+        }
+
+        /* Ride Status */
+        .ride-status {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 15px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .status-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1e40af;
+        }
+
+        .driver-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .driver-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .driver-details h4 {
+            margin-bottom: 0.25rem;
+            color: #1e40af;
+        }
+
+        .driver-details p {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .eta {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            color: #2563eb;
+        }
+
+        /* Map Container */
+        .map-container {
+            position: relative;
+            background: #e2e8f0;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .map-btn {
+            background: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 1.2rem;
+        }
+
+        .map-btn:hover {
+            background: #f1f5f9;
+        }
+
+        /* Chat Panel */
+        .chat-panel {
+            background: white;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #1e40af, #2563eb);
+            color: white;
+            padding: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message.sent {
+            align-items: flex-end;
+        }
+
+        .message.received {
+            align-items: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            padding: 0.75rem 1rem;
+            border-radius: 15px;
+            margin-bottom: 0.25rem;
+        }
+
+        .message.sent .message-bubble {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.received .message-bubble {
+            background: white;
+            color: #1e3a8a;
+            border: 1px solid #e2e8f0;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            padding: 0 0.5rem;
+        }
+
+        .chat-input-container {
+            padding: 1rem;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.875rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 0.95rem;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            padding: 0.5rem 1rem;
+            color: #64748b;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .status-badge.searching {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.matched {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.arriving {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 400px auto;
+            }
+
+            .chat-panel {
+                max-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">🎓</div>
+            <div class="user-info">
+                <h2 id="welcomeUser">Welcome, Student!</h2>
+                <p id="userEmail">student@university.edu</p>
+            </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Ride Request Panel -->
+        <div class="ride-panel">
+            <h2 class="panel-title">🚗 Request a Ride</h2>
+            
+            <form id="rideForm">
+                <div class="form-group">
+                    <label for="pickup">Pickup Location</label>
+                    <input 
+                        type="text" 
+                        id="pickup" 
+                        class="form-input" 
+                        placeholder="Enter your current location"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="destination">Destination</label>
+                    <select id="destination" class="form-input" required>
+                        <option value="">Select destination...</option>
+                        <option value="main-campus">Main Campus Building</option>
+                        <option value="library">University Library</option>
+                        <option value="dorms">Student Dormitories</option>
+                        <option value="metro-north">Metro Station - North</option>
+                        <option value="metro-south">Metro Station - South</option>
+                        <option value="metro-east">Metro Station - East</option>
+                        <option value="sports-complex">Sports Complex</option>
+                        <option value="cafeteria">Main Cafeteria</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="passengers">Number of Passengers</label>
+                    <select id="passengers" class="form-input" required>
+                        <option value="1">1 Passenger</option>
+                        <option value="2">2 Passengers</option>
+                        <option value="3">3 Passengers</option>
+                        <option value="4">4 Passengers</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="request-btn" id="requestBtn">
+                    Find Driver
+                </button>
+                <button type="button" class="request-btn cancel-btn" id="cancelBtn" style="display: none;">
+                    Cancel Ride
+                </button>
+            </form>
+
+            <!-- Ride Status -->
+            <div id="rideStatus" style="display: none;">
+                <div class="ride-status">
+                    <span class="status-badge searching" id="statusBadge">Searching...</span>
+                    <h3 class="status-title" id="statusTitle">Finding your driver...</h3>
+                    
+                    <div id="driverInfo" style="display: none;">
+                        <div class="driver-info">
+                            <div class="driver-avatar" id="driverAvatar">👨‍🎓</div>
+                            <div class="driver-details">
+                                <h4 id="driverName">John Doe</h4>
+                                <p id="driverDetails">⭐ 4.9 • Computer Science, 3rd Year</p>
+                                <p id="vehicleInfo">🚗 Toyota Camry - ABC 123</p>
+                            </div>
+                        </div>
+                        <div class="eta" id="eta">
+                            Estimated arrival: <strong>5 minutes</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Container -->
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="map-controls">
+                <button class="map-btn" onclick="centerMap()" title="Center Map">📍</button>
+                <button class="map-btn" onclick="toggleTraffic()" title="Toggle Traffic">🚦</button>
+            </div>
+        </div>
+
+        <!-- Chat Panel -->
+        <div class="chat-panel">
+            <div class="chat-header">
+                💬 Chat with Driver
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message received">
+                    <div class="message-bubble">Welcome! Request a ride to start chatting with your driver.</div>
+                    <div class="message-time">System</div>
+                </div>
+            </div>
+            <div class="typing-indicator" id="typingIndicator">
+                Driver is typing...
+            </div>
+            <div class="chat-input-container">
+                <input 
+                    type="text" 
+                    class="chat-input" 
+                    id="chatInput" 
+                    placeholder="Type a message..."
+                    disabled
+                >
+                <button class="send-btn" id="sendBtn" disabled onclick="sendMessage()">
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize Socket.io
+        const socket = io();
+        
+        // Get user info from session
+        const username = sessionStorage.getItem('username') || 'Student';
+        const email = sessionStorage.getItem('email') || 'student@university.edu';
+        
+        document.getElementById('welcomeUser').textContent = `Welcome, ${username}!`;
+        document.getElementById('userEmail').textContent = email;
+
+        // Initialize Map
+        const map = L.map('map').setView([24.810822021104638, 46.710884594646124], 13); // Default: New York
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        let studentMarker, driverMarker, routeLine;
+        let rideActive = false;
+
+        // Add student marker
+        function addStudentMarker(lat, lng) {
+            if (studentMarker) {
+                studentMarker.setLatLng([lat, lng]);
+            } else {
+                const studentIcon = L.divIcon({
+                    html: '📍',
+                    className: 'student-marker',
+                    iconSize: [30, 30]
+                });
+                studentMarker = L.marker([lat, lng], { icon: studentIcon }).addTo(map);
+                studentMarker.bindPopup('Your Location').openPopup();
+            }
+            map.setView([lat, lng], 15);
+        }
+
+        // Add driver marker
+        function addDriverMarker(lat, lng) {
+            if (driverMarker) {
+                driverMarker.setLatLng([lat, lng]);
+            } else {
+                const driverIcon = L.divIcon({
+                    html: '🚗',
+                    className: 'driver-marker',
+                    iconSize: [30, 30]
+                });
+                driverMarker = L.marker([lat, lng], { icon: driverIcon }).addTo(map);
+                driverMarker.bindPopup('Your Driver');
+            }
+        }
+
+        // Get current location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                addStudentMarker(position.coords.latitude, position.coords.longitude);
+            });
+        }
+
+        function centerMap() {
+            if (studentMarker) {
+                map.setView(studentMarker.getLatLng(), 15);
+            }
+        }
+
+        function toggleTraffic() {
+            alert('Traffic layer toggle (requires API integration)');
+        }
+
+        // Ride Request
+        const rideForm = document.getElementById('rideForm');
+        const requestBtn = document.getElementById('requestBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const rideStatus = document.getElementById('rideStatus');
+        const statusBadge = document.getElementById('statusBadge');
+        const statusTitle = document.getElementById('statusTitle');
+        const driverInfo = document.getElementById('driverInfo');
+        let currentRideId = null;
+
+        // Load user data
+        let userData = null;
+        window.onload = function() {
+            const userDataStr = sessionStorage.getItem('userData');
+            if (!userDataStr) {
+                window.location.href = 'login.html';
+                return;
+            }
+            userData = JSON.parse(userDataStr);
+            
+            // Authenticate socket connection
+            socket.emit('authenticate', userData.id);
+            
+            // Load active rides
+            loadActiveRides();
+        };
+
+        async function loadActiveRides() {
+            try {
+                const response = await fetch(`/api/rides/student/${userData.id}`);
+                const data = await response.json();
+                
+                if (data.rides && data.rides.length > 0) {
+                    const ride = data.rides[0]; // Get most recent
+                    currentRideId = ride.id;
+                    // Show ride status UI
+                    rideStatus.style.display = 'block';
+                    requestBtn.disabled = true;
+                    cancelBtn.style.display = 'block';
+                    rideActive = true;
+                    
+                    if (ride.driver_name) {
+                        statusBadge.className = 'status-badge matched';
+                        statusBadge.textContent = 'Driver Matched';
+                        driverInfo.style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading rides:', error);
+            }
+        }
+
+        rideForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const pickup = document.getElementById('pickup').value;
+            const destination = document.getElementById('destination').value;
+            const passengers = document.getElementById('passengers').value;
+
+            const studentPos = studentMarker ? studentMarker.getLatLng() : { lat: 24.7136, lng: 46.6753 };
+            
+            try {
+                const response = await fetch('/api/rides', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        studentId: userData.id,
+                        pickup: {
+                            location: pickup,
+                            lat: studentPos.lat,
+                            lng: studentPos.lng
+                        },
+                        destination: {
+                            location: destination,
+                            lat: studentPos.lat + 0.05,
+                            lng: studentPos.lng + 0.05
+                        },
+                        passengers: parseInt(passengers),
+                        fare: 5.00
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentRideId = data.ride.id;
+                    
+                    // Show status
+                    rideStatus.style.display = 'block';
+                    requestBtn.disabled = true;
+                    cancelBtn.style.display = 'block';
+                    rideActive = true;
+                    statusBadge.className = 'status-badge searching';
+                    statusBadge.textContent = 'Finding Driver...';
+                    
+                    addChatMessage('Searching for nearby drivers...', 'received', 'System');
+                } else {
+                    alert('Failed to create ride: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error creating ride:', error);
+                alert('Network error. Please try again.');
+            }
+        });
+
+        // Listen for ride accepted event
+        socket.on('rideAccepted', (data) => {
+            if (data.ride && data.ride.id === currentRideId) {
+                statusBadge.className = 'status-badge matched';
+                statusBadge.textContent = 'Driver Found!';
+                statusTitle.textContent = 'Your driver is on the way';
+                driverInfo.style.display = 'block';
+                
+                // Add driver marker
+                if (studentMarker) {
+                    const studentPos = studentMarker.getLatLng();
+                    addDriverMarker(studentPos.lat + 0.01, studentPos.lng + 0.01);
+                    
+                    // Draw route
+                    if (routeLine) map.removeLayer(routeLine);
+                    routeLine = L.polyline([
+                        [studentPos.lat, studentPos.lng],
+                        [studentPos.lat + 0.01, studentPos.lng + 0.01]
+                    ], { color: '#3b82f6', weight: 4 }).addTo(map);
+                }
+                
+                // Enable chat
+                document.getElementById('chatInput').disabled = false;
+                document.getElementById('sendBtn').disabled = false;
+                
+                addChatMessage('Driver has accepted your ride!', 'received', 'System');
+            }
+        });
+
+        cancelBtn.addEventListener('click', function() {
+            socket.emit('cancelRide', { rideId: currentRideId, studentId: userData.id });
+            resetRide();
+        });
+
+        function resetRide() {
+            rideStatus.style.display = 'none';
+            requestBtn.disabled = false;
+            cancelBtn.style.display = 'none';
+            driverInfo.style.display = 'none';
+            rideActive = false;
+            
+            if (driverMarker) map.removeLayer(driverMarker);
+            if (routeLine) map.removeLayer(routeLine);
+            
+            document.getElementById('chatInput').disabled = true;
+            document.getElementById('sendBtn').disabled = true;
+        }
+
+        // Chat functionality
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+
+        function addChatMessage(message, type, sender = 'You') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = message;
+            
+            const time = document.createElement('div');
+            time.className = 'message-time';
+            const now = new Date();
+            time.textContent = `${sender} • ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+            
+            messageDiv.appendChild(bubble);
+            messageDiv.appendChild(time);
+            chatMessages.appendChild(messageDiv);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (message && currentRideId) {
+                addChatMessage(message, 'sent');
+                socket.emit('chatMessage', {
+                    rideId: currentRideId,
+                    senderId: userData.id,
+                    message: message,
+                    timestamp: new Date()
+                });
+                chatInput.value = '';
+            }
+        }
+
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Socket.io events
+        socket.on('driverMatched', (data) => {
+            console.log('Driver matched:', data);
+            document.getElementById('driverName').textContent = data.driverName;
+            document.getElementById('driverDetails').textContent = `⭐ ${data.rating} • ${data.major}, ${data.year}`;
+            document.getElementById('vehicleInfo').textContent = `🚗 ${data.vehicle}`;
+        });
+
+        socket.on('driverLocationUpdate', (data) => {
+            if (driverMarker) {
+                addDriverMarker(data.lat, data.lng);
+                
+                // Update route
+                if (studentMarker && routeLine) {
+                    map.removeLayer(routeLine);
+                    routeLine = L.polyline([
+                        studentMarker.getLatLng(),
+                        [data.lat, data.lng]
+                    ], { color: '#3b82f6', weight: 4 }).addTo(map);
+                }
+            }
+        });
+
+        socket.on('chatMessage', (data) => {
+            addChatMessage(data.message, 'received', 'Driver');
+        });
+
+        socket.on('driverTyping', () => {
+            document.getElementById('typingIndicator').classList.add('active');
+            setTimeout(() => {
+                document.getElementById('typingIndicator').classList.remove('active');
+            }, 3000);
+        });
+
+        socket.on('rideCompleted', () => {
+            addChatMessage('Ride completed! Thank you for using Amam.', 'received', 'System');
+            setTimeout(resetRide, 5000);
+        });
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

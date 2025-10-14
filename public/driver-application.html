@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Application - Amam</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #1e40af;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1e40af, #3b82f6);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: #1e40af;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            font-size: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .info-box p {
+            color: #1e40af;
+            line-height: 1.6;
+        }
+
+        .requirements-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .requirements-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .requirements-list li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .requirements-list li:last-child {
+            border-bottom: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .cancel-btn {
+            background: white;
+            color: #3b82f6;
+            border: 2px solid #3b82f6;
+        }
+
+        .cancel-btn:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            border-radius: 8px;
+            color: #991b1b;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            color: #065f46;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: slideIn 0.6s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚙 Become a Driver</h1>
+            <p>Join our community of student drivers</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+
+        <div class="error-message" id="error-message"></div>
+        <div class="success-message" id="success-message"></div>
+
+        <div class="info-box">
+            <p><strong>Requirements to become a driver:</strong></p>
+            <ul class="requirements-list">
+                <li>Must be a verified student at the university</li>
+                <li>Valid driver's license</li>
+                <li>Registered vehicle with insurance</li>
+                <li>Clean driving record</li>
+                <li>Admin approval required</li>
+            </ul>
+        </div>
+
+        <form id="driver-application-form">
+            <!-- Personal Info -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <span class="section-icon">📋</span>
+                    Driver Information
+                </h2>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="license-number">Driver's License Number *</label>
+                        <input type="text" id="license-number" name="licenseNumber" required 
+                               placeholder="DL123456789">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vehicle Info -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <span class="section-icon">🚗</span>
+                    Vehicle Information
+                </h2>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="vehicle-make">Make *</label>
+                        <input type="text" id="vehicle-make" name="vehicleMake" required 
+                               placeholder="Toyota">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vehicle-model">Model *</label>
+                        <input type="text" id="vehicle-model" name="vehicleModel" required 
+                               placeholder="Camry">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vehicle-year">Year *</label>
+                        <input type="number" id="vehicle-year" name="vehicleYear" required 
+                               min="2000" max="2025" placeholder="2020">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vehicle-color">Color *</label>
+                        <input type="text" id="vehicle-color" name="vehicleColor" required 
+                               placeholder="Silver">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="plate-number">License Plate Number *</label>
+                        <input type="text" id="plate-number" name="plateNumber" required 
+                               placeholder="ABC-1234">
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <p>⚠️ <strong>Important:</strong> All information will be verified by our admin team. Providing false information may result in permanent ban from the platform.</p>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="cancel-btn" onclick="window.location.href='role-selection.html'">
+                    Cancel
+                </button>
+                <button type="submit" class="submit-btn" id="submit-btn">
+                    Submit Application
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let userData = null;
+
+        window.onload = function() {
+            const userDataStr = sessionStorage.getItem('userData');
+            if (!userDataStr) {
+                window.location.href = 'login.html';
+                return;
+            }
+            userData = JSON.parse(userDataStr);
+
+            // Update progress bar as form is filled
+            updateProgress();
+            
+            const form = document.getElementById('driver-application-form');
+            form.addEventListener('input', updateProgress);
+        };
+
+        function updateProgress() {
+            const form = document.getElementById('driver-application-form');
+            const inputs = form.querySelectorAll('input[required]');
+            let filled = 0;
+            
+            inputs.forEach(input => {
+                if (input.value.trim() !== '') {
+                    filled++;
+                }
+            });
+
+            const percentage = (filled / inputs.length) * 100;
+            document.getElementById('progress').style.width = percentage + '%';
+        }
+
+        document.getElementById('driver-application-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const errorMsg = document.getElementById('error-message');
+            const successMsg = document.getElementById('success-message');
+            const submitBtn = document.getElementById('submit-btn');
+
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+
+            // Get form data
+            const formData = {
+                userId: userData.id,
+                licenseNumber: document.getElementById('license-number').value,
+                vehicleMake: document.getElementById('vehicle-make').value,
+                vehicleModel: document.getElementById('vehicle-model').value,
+                vehicleYear: parseInt(document.getElementById('vehicle-year').value),
+                vehicleColor: document.getElementById('vehicle-color').value,
+                plateNumber: document.getElementById('plate-number').value
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            try {
+                const response = await fetch('/api/driver-application', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    successMsg.textContent = '✅ Application submitted successfully! You will be notified once admin reviews your application.';
+                    successMsg.style.display = 'block';
+
+                    setTimeout(() => {
+                        window.location.href = 'role-selection.html';
+                    }, 3000);
+                } else {
+                    errorMsg.textContent = '❌ ' + (data.error || 'Failed to submit application');
+                    errorMsg.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Application';
+                }
+            } catch (error) {
+                console.error('Application error:', error);
+                errorMsg.textContent = '❌ Network error. Please try again.';
+                errorMsg.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Application';
+            }
+        });
+    </script>
+</body>
+</html>

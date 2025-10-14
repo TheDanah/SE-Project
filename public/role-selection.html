@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Role - Amam</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header .welcome {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .role-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .role-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #1e40af, #3b82f6);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .role-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .role-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .role-card.selected {
+            border-color: #3b82f6;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .role-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .role-title {
+            font-size: 1.8rem;
+            color: #1e40af;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .role-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .role-features {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            color: #555;
+        }
+
+        .feature-item::before {
+            content: '✓';
+            color: #3b82f6;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .driver-status {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .driver-status.pending {
+            background: #fef3c7;
+            border-color: #f59e0b;
+        }
+
+        .driver-status.approved {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+
+        .driver-status.rejected {
+            background: #fee2e2;
+            border-color: #ef4444;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .badge-pending {
+            background: #fbbf24;
+            color: #78350f;
+        }
+
+        .badge-approved {
+            background: #10b981;
+            color: white;
+        }
+
+        .badge-rejected {
+            background: #ef4444;
+            color: white;
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .action-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .action-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .secondary-button {
+            background: white;
+            color: #3b82f6;
+            border: 2px solid #3b82f6;
+        }
+
+        .secondary-button:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .logout-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logout-link a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .logout-link a:hover {
+            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .role-card {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .role-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Welcome to Amam</h1>
+            <p class="welcome">Choose how you want to use the platform</p>
+        </div>
+
+        <div class="role-selector">
+            <!-- Passenger Card -->
+            <div class="role-card" id="passenger-card" onclick="selectRole('passenger')">
+                <div class="role-icon">🚗</div>
+                <h2 class="role-title">I Need a Ride</h2>
+                <p class="role-description">Request rides from verified student drivers to your university or nearby metro stations.</p>
+                
+                <div class="role-features">
+                    <div class="feature-item">Real-time GPS tracking</div>
+                    <div class="feature-item">Chat with your driver</div>
+                    <div class="feature-item">Safe & affordable rides</div>
+                    <div class="feature-item">Student-only community</div>
+                </div>
+
+                <button class="action-button" id="passenger-btn">
+                    Continue as Passenger
+                </button>
+            </div>
+
+            <!-- Driver Card -->
+            <div class="role-card" id="driver-card" onclick="selectRole('driver')">
+                <div class="role-icon">🚙</div>
+                <h2 class="role-title">I Want to Drive</h2>
+                <p class="role-description">Earn money by giving rides to fellow students. Flexible hours, work on your schedule!</p>
+                
+                <div id="driver-content">
+                    <div class="role-features">
+                        <div class="feature-item">Flexible schedule</div>
+                        <div class="feature-item">Earn extra income</div>
+                        <div class="feature-item">Help fellow students</div>
+                        <div class="feature-item">Track your earnings</div>
+                    </div>
+
+                    <div id="driver-status-info"></div>
+
+                    <button class="action-button" id="driver-btn">
+                        Apply to Become Driver
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="logout-link">
+            <a href="login.html">← Back to Login</a>
+        </div>
+    </div>
+
+    <script>
+        let selectedRole = null;
+        let userData = null;
+
+        // Load user data from session
+        window.onload = function() {
+            const userDataStr = sessionStorage.getItem('userData');
+            if (!userDataStr) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            userData = JSON.parse(userDataStr);
+            
+            // Check driver application status
+            checkDriverStatus();
+        };
+
+        async function checkDriverStatus() {
+            try {
+                const response = await fetch(`/api/driver-application/${userData.id}`);
+                const data = await response.json();
+
+                if (data.hasApplication) {
+                    const app = data.application;
+                    const statusInfo = document.getElementById('driver-status-info');
+                    const driverBtn = document.getElementById('driver-btn');
+
+                    if (app.status === 'pending') {
+                        statusInfo.innerHTML = `
+                            <div class="driver-status pending">
+                                <strong>⏳ Application Pending</strong>
+                                <p style="margin-top: 10px; color: #666;">Your driver application is being reviewed by our admin team.</p>
+                                <span class="status-badge badge-pending">Under Review</span>
+                            </div>
+                        `;
+                        driverBtn.textContent = 'Application Pending';
+                        driverBtn.disabled = true;
+
+                    } else if (app.status === 'approved') {
+                        statusInfo.innerHTML = `
+                            <div class="driver-status approved">
+                                <strong>✅ You're an Approved Driver!</strong>
+                                <p style="margin-top: 10px; color: #666;">Start accepting rides and earning money.</p>
+                                <span class="status-badge badge-approved">Approved</span>
+                            </div>
+                        `;
+                        driverBtn.textContent = 'Go to Driver Dashboard';
+                        driverBtn.onclick = function() {
+                            window.location.href = 'driver-dashboard.html';
+                        };
+
+                    } else if (app.status === 'rejected') {
+                        statusInfo.innerHTML = `
+                            <div class="driver-status rejected">
+                                <strong>❌ Application Rejected</strong>
+                                <p style="margin-top: 10px; color: #666;">${app.rejection_reason || 'Please contact admin for more information.'}</p>
+                                <span class="status-badge badge-rejected">Rejected</span>
+                            </div>
+                        `;
+                        driverBtn.textContent = 'Contact Admin';
+                        driverBtn.onclick = function() {
+                            alert('Please email admin@university.edu for assistance.');
+                        };
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking driver status:', error);
+            }
+        }
+
+        function selectRole(role) {
+            selectedRole = role;
+            
+            // Remove selected class from all cards
+            document.querySelectorAll('.role-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selected class to clicked card
+            if (role === 'passenger') {
+                document.getElementById('passenger-card').classList.add('selected');
+            } else {
+                document.getElementById('driver-card').classList.add('selected');
+            }
+        }
+
+        // Passenger button click
+        document.getElementById('passenger-btn').onclick = function() {
+            sessionStorage.setItem('currentRole', 'passenger');
+            window.location.href = 'student-dashboard.html';
+        };
+
+        // Driver button click (if no application exists)
+        document.getElementById('driver-btn').onclick = function() {
+            if (this.disabled) return;
+            
+            // Check if button text indicates they should go to dashboard
+            if (this.textContent === 'Go to Driver Dashboard') {
+                window.location.href = 'driver-dashboard.html';
+            } else {
+                // Redirect to driver application page
+                window.location.href = 'driver-application.html';
+            }
+        };
+    </script>
+</body>
+</html>

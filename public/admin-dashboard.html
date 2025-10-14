@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Amam</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #1e3a8a;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e40af, #2563eb);
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+        }
+
+        .user-info h2 {
+            font-size: 1.2rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .user-info p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #2563eb;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .stat-card.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .stat-card.success {
+            border-left-color: #10b981;
+        }
+
+        .stat-card.danger {
+            border-left-color: #dc2626;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            color: #64748b;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+
+        .tab:hover {
+            color: #2563eb;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Verification Cards */
+        .verification-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .verification-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .verification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1.5rem;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-details h3 {
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            color: #475569;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            min-width: 120px;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .verification-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .approve-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 0.875rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .approve-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .reject-btn {
+            flex: 1;
+            background: white;
+            color: #dc2626;
+            border: 2px solid #dc2626;
+            padding: 0.875rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .reject-btn:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        .view-btn {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-left: 0.5rem;
+        }
+
+        /* Search and Filter */
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.875rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .filter-select {
+            padding: 0.875rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            background: white;
+        }
+
+        /* Table */
+        .data-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        td {
+            padding: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-view {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .btn-delete {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-small:hover {
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #94a3b8;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: #1e40af;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .document-preview {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .verification-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">⚙️</div>
+            <div class="user-info">
+                <h2 id="welcomeAdmin">Welcome, Admin!</h2>
+                <p>Administrator Dashboard</p>
+            </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card warning">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-value" id="pendingCount">12</div>
+                <div class="stat-label">Pending Verifications</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value" id="approvedCount">248</div>
+                <div class="stat-label">Approved Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🚗</div>
+                <div class="stat-value" id="driverCount">45</div>
+                <div class="stat-label">Active Drivers</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value" id="ridesCount">1,234</div>
+                <div class="stat-label">Total Rides</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('students')">
+                🎓 Student Verifications
+            </button>
+            <button class="tab" onclick="switchTab('drivers')">
+                🚗 Driver Verifications
+            </button>
+            <button class="tab" onclick="switchTab('rides')">
+                📊 Ride Management
+            </button>
+            <button class="tab" onclick="switchTab('reports')">
+                📈 Reports
+            </button>
+        </div>
+
+        <!-- Student Verifications Tab -->
+        <div id="studentsTab" class="tab-content active">
+            <div class="controls">
+                <input type="text" class="search-input" placeholder="Search by name, email, or student ID...">
+                <select class="filter-select">
+                    <option value="all">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+
+            <div class="verification-grid">
+                <!-- Sample Student Verification Card -->
+                <div class="verification-card">
+                    <div class="verification-header">
+                        <div class="user-details">
+                            <h3>Sarah Johnson</h3>
+                            <div class="detail-row">
+                                <span class="detail-label">Email:</span>
+                                <span>sarah.johnson@university.edu</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Student ID:</span>
+                                <span>STU-2024-001234</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">University:</span>
+                                <span>State University</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Major:</span>
+                                <span>Computer Science</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Registered:</span>
+                                <span>2 hours ago</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="status-badge pending">Pending</span>
+                            <button class="view-btn" onclick="viewDocument('student', 1)">
+                                View ID
+                            </button>
+                        </div>
+                    </div>
+                    <div class="verification-actions">
+                        <button class="approve-btn" onclick="approveStudent(1)">
+                            ✅ Approve Student
+                        </button>
+                        <button class="reject-btn" onclick="rejectStudent(1)">
+                            ❌ Reject
+                        </button>
+                    </div>
+                </div>
+
+                <div class="verification-card">
+                    <div class="verification-header">
+                        <div class="user-details">
+                            <h3>Mike Chen</h3>
+                            <div class="detail-row">
+                                <span class="detail-label">Email:</span>
+                                <span>mike.chen@university.edu</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Student ID:</span>
+                                <span>STU-2024-001235</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">University:</span>
+                                <span>State University</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Major:</span>
+                                <span>Engineering</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Registered:</span>
+                                <span>5 hours ago</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="status-badge pending">Pending</span>
+                            <button class="view-btn" onclick="viewDocument('student', 2)">
+                                View ID
+                            </button>
+                        </div>
+                    </div>
+                    <div class="verification-actions">
+                        <button class="approve-btn" onclick="approveStudent(2)">
+                            ✅ Approve Student
+                        </button>
+                        <button class="reject-btn" onclick="rejectStudent(2)">
+                            ❌ Reject
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Driver Verifications Tab -->
+        <div id="driversTab" class="tab-content">
+            <div class="controls">
+                <input type="text" class="search-input" placeholder="Search drivers...">
+                <select class="filter-select">
+                    <option value="all">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+
+            <div class="verification-grid">
+                <div class="verification-card">
+                    <div class="verification-header">
+                        <div class="user-details">
+                            <h3>John Smith</h3>
+                            <div class="detail-row">
+                                <span class="detail-label">Email:</span>
+                                <span>john.smith@university.edu</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Student ID:</span>
+                                <span>STU-2024-001100</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">License:</span>
+                                <span>DL-12345678</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Vehicle:</span>
+                                <span>Toyota Camry - ABC 123</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Registered:</span>
+                                <span>1 day ago</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="status-badge pending">Pending</span>
+                            <button class="view-btn" onclick="viewDocument('driver', 1)">
+                                View Docs
+                            </button>
+                        </div>
+                    </div>
+                    <div class="verification-actions">
+                        <button class="approve-btn" onclick="approveDriver(1)">
+                            ✅ Approve Driver
+                        </button>
+                        <button class="reject-btn" onclick="rejectDriver(1)">
+                            ❌ Reject
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ride Management Tab -->
+        <div id="ridesTab" class="tab-content">
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ride ID</th>
+                            <th>Student</th>
+                            <th>Driver</th>
+                            <th>Route</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#R-1234</td>
+                            <td>Sarah Johnson</td>
+                            <td>John Smith</td>
+                            <td>Campus → Metro North</td>
+                            <td><span class="status-badge approved">Completed</span></td>
+                            <td>Oct 14, 2025</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-small btn-view">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#R-1235</td>
+                            <td>Mike Chen</td>
+                            <td>Emma Davis</td>
+                            <td>Dorms → Library</td>
+                            <td><span class="status-badge pending">In Progress</span></td>
+                            <td>Oct 14, 2025</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-small btn-view">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reportsTab" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-value">856</div>
+                    <div class="stat-label">Rides This Week</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-value">$12,450</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-value">4.8</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-value">+23%</div>
+                    <div class="stat-label">Growth This Month</div>
+                </div>
+            </div>
+
+            <div class="empty-state">
+                <div class="empty-icon">📈</div>
+                <h3>Detailed Analytics Coming Soon</h3>
+                <p>Charts and graphs for ride statistics, revenue trends, and user growth</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Viewer Modal -->
+    <div id="documentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Document Verification</h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div class="document-preview">
+                <h3 id="docTitle">Student ID Card</h3>
+                <p style="color: #64748b; margin-top: 1rem;">
+                    📄 In production, this would display uploaded student ID, driver's license, vehicle registration, and insurance documents for verification.
+                </p>
+                <div style="background: white; padding: 2rem; margin-top: 1rem; border-radius: 8px; text-align: center;">
+                    <p style="font-size: 3rem; margin-bottom: 1rem;">🎓</p>
+                    <p><strong>Document Preview Area</strong></p>
+                    <p style="color: #64748b; margin-top: 0.5rem; font-size: 0.9rem;">
+                        Verify photo, name, student ID number, and expiration date
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get admin info from session
+        const username = sessionStorage.getItem('username') || 'Admin';
+        document.getElementById('welcomeAdmin').textContent = `Welcome, ${username}!`;
+
+        // Tab Switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+    <script>
+        let adminData = null;
+
+        // Load admin data and stats on page load
+        window.onload = async function() {
+            const userData = sessionStorage.getItem('userData');
+            if (!userData) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            adminData = JSON.parse(userData);
+            if (!adminData.isAdmin) {
+                alert('Access denied. Admin only.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Load dashboard data
+            await loadStats();
+            await loadPendingStudents();
+            await loadPendingDrivers();
+        };
+
+        // Load platform stats
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/admin/stats');
+                const data = await response.json();
+                
+                if (data.stats) {
+                    document.getElementById('pendingCount').textContent = data.stats.pending_students;
+                    document.getElementById('approvedCount').textContent = data.stats.approved_students;
+                    document.getElementById('driversCount').textContent = data.stats.approved_drivers;
+                    document.getElementById('ridesCount').textContent = data.stats.total_rides;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Load pending students
+        async function loadPendingStudents() {
+            try {
+                const response = await fetch('/api/admin/pending-students');
+                const data = await response.json();
+                
+                const container = document.querySelector('#studentsTab .verification-cards');
+                container.innerHTML = '';
+                
+                if (data.students && data.students.length > 0) {
+                    data.students.forEach(student => {
+                        const card = document.createElement('div');
+                        card.className = 'verification-card';
+                        card.innerHTML = `
+                            <div class="card-header">
+                                <div class="user-avatar">🎓</div>
+                                <div>
+                                    <h3>${student.username}</h3>
+                                    <p>${student.email}</p>
+                                </div>
+                                <span class="status-badge pending">Pending</span>
+                            </div>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <strong>Student ID:</strong> ${student.student_id}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>University:</strong> ${student.university}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Major:</strong> ${student.major || 'N/A'}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Registered:</strong> ${new Date(student.created_at).toLocaleDateString()}
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="approve-btn" onclick="approveStudent(${student.id})">
+                                    ✓ Approve Student
+                                </button>
+                                <button class="reject-btn" onclick="rejectStudent(${student.id})">
+                                    ✗ Reject
+                                </button>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = '<p style="text-align:center; color:#666; padding:2rem;">No pending student verifications</p>';
+                }
+            } catch (error) {
+                console.error('Error loading pending students:', error);
+            }
+        }
+
+        // Load pending driver applications
+        async function loadPendingDrivers() {
+            try {
+                const response = await fetch('/api/admin/pending-drivers');
+                const data = await response.json();
+                
+                const container = document.querySelector('#driversTab .verification-cards');
+                container.innerHTML = '';
+                
+                if (data.applications && data.applications.length > 0) {
+                    data.applications.forEach(app => {
+                        const card = document.createElement('div');
+                        card.className = 'verification-card';
+                        card.innerHTML = `
+                            <div class="card-header">
+                                <div class="user-avatar">🚗</div>
+                                <div>
+                                    <h3>${app.username}</h3>
+                                    <p>${app.email}</p>
+                                </div>
+                                <span class="status-badge pending">Pending</span>
+                            </div>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <strong>Student ID:</strong> ${app.student_id}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>License #:</strong> ${app.license_number}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Vehicle:</strong> ${app.vehicle_make} ${app.vehicle_model} (${app.vehicle_year})
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Color:</strong> ${app.vehicle_color}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Plate:</strong> ${app.plate_number}
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Applied:</strong> ${new Date(app.applied_at).toLocaleDateString()}
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="approve-btn" onclick="approveDriver(${app.id})">
+                                    ✓ Approve Driver
+                                </button>
+                                <button class="reject-btn" onclick="rejectDriver(${app.id})">
+                                    ✗ Reject
+                                </button>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = '<p style="text-align:center; color:#666; padding:2rem;">No pending driver applications</p>';
+                }
+            } catch (error) {
+                console.error('Error loading pending drivers:', error);
+            }
+        }
+
+        // Switch tabs
+        function switchTab(tabName, event) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active from all tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Student Approval
+        async function approveStudent(id) {
+            if (!confirm('Approve this student account?')) return;
+            
+            try {
+                const response = await fetch('/api/admin/approve-student', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ studentId: id })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Student account approved!');
+                    await loadStats();
+                    await loadPendingStudents();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to approve student'));
+                }
+            } catch (error) {
+                console.error('Error approving student:', error);
+                alert('Network error. Please try again.');
+            }
+        }
+
+        async function rejectStudent(id) {
+            const reason = prompt('Enter rejection reason (optional):');
+            if (reason === null) return;
+            
+            try {
+                // For now, just remove from pending list
+                alert('Student rejection feature coming soon. Will notify student.');
+                await loadPendingStudents();
+            } catch (error) {
+                console.error('Error rejecting student:', error);
+            }
+        }
+
+        // Driver Approval
+        async function approveDriver(id) {
+            if (!confirm('Approve this driver application? Ensure all documents are verified.')) return;
+            
+            try {
+                const response = await fetch('/api/admin/review-driver', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        applicationId: id,
+                        adminId: adminData.id,
+                        approved: true,
+                        reason: null
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Driver approved! They can now accept rides.');
+                    await loadStats();
+                    await loadPendingDrivers();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to approve driver'));
+                }
+            } catch (error) {
+                console.error('Error approving driver:', error);
+                alert('Network error. Please try again.');
+            }
+        }
+
+        async function rejectDriver(id) {
+            const reason = prompt('Enter rejection reason:');
+            if (!reason) return;
+            
+            try {
+                const response = await fetch('/api/admin/review-driver', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        applicationId: id,
+                        adminId: adminData.id,
+                        approved: false,
+                        reason: reason
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Driver application rejected. Student will be notified.');
+                    await loadStats();
+                    await loadPendingDrivers();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to reject driver'));
+                }
+            } catch (error) {
+                console.error('Error rejecting driver:', error);
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // Document Viewer
+        function viewDocument(type, id) {
+            const modal = document.getElementById('documentModal');
+            const title = document.getElementById('docTitle');
+            
+            if (type === 'student') {
+                title.textContent = 'Student ID Verification';
+            } else {
+                title.textContent = 'Driver Documents Verification';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('documentModal').classList.remove('active');
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('documentModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
