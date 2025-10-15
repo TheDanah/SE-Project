@@ -1,4 +1,4 @@
-# 🚗 Amam - Student Ride Sharing App
+# Amam - Student Ride Sharing App
 
 A Modern ride-sharing App **exclusively for imam university**.
 
