@@ -344,9 +344,9 @@
 <body>
     <div class="login-container">
         <div class="logo-section">
-            <div class="logo"></div>
+            <div class="logo">ō͡≡o</div>
             <div class="logo-text">Amam User</div>
-            <p class="welcome-text">Login to access your student ride-sharing account</p>
+            <p class="welcome-text">Login to access your ride-sharing account</p>
         </div>
 
         <div class="error-message" id="errorMessage">
@@ -357,11 +357,11 @@
             <div class="form-group">
                 <label for="role">Login As</label>
                 <div class="input-wrapper">
-                    <span class="input-icon">👤</span>
+                    <span class="input-icon">𐀪𐀪</span>
                     <select id="role" class="form-input" required>
-                        <option value="">Select your role...</option>
-                        <option value="student">Student </option>
-                        <option value="driver">Vaculty Meber</option>
+                        <option value=""></option>
+                        <option value="student">Student</option>
+                        <option value="driver">Faculty Member</option>
                         <option value="admin">Admin</option>
                     </select>
                 </div>
@@ -370,12 +370,12 @@
             <div class="form-group">
                 <label for="username">Username</label>
                 <div class="input-wrapper">
-                    <span class="input-icon">👤</span>
+                    <span class="input-icon">𖨆</span>
                     <input 
                         type="text" 
                         id="username" 
                         class="form-input" 
-                        placeholder="Enter your username"
+                        placeholder=""
                         required
                     >
                 </div>
@@ -384,7 +384,7 @@
             <div class="form-group">
                 <label for="email">Email</label>
                 <div class="input-wrapper">
-                    <span class="input-icon">📧</span>
+                    <span class="input-icon">✉</span>
                     <input 
                         type="email" 
                         id="email" 
@@ -398,16 +398,16 @@
             <div class="form-group">
                 <label for="password">Password</label>
                 <div class="input-wrapper">
-                    <span class="input-icon">🔒</span>
+                    <span class="input-icon">ꄗ</span>
                     <input 
                         type="password" 
                         id="password" 
                         class="form-input" 
-                        placeholder="Enter your password"
+                        placeholder=""
                         required
                     >
                     <button type="button" class="password-toggle" id="togglePassword">
-                        👁️
+                        𖠂
                     </button>
                 </div>
             </div>
@@ -444,7 +444,7 @@
         togglePassword.addEventListener('click', function() {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
-            this.textContent = type === 'password' ? '👁️' : '🙈';
+            this.textContent = type === 'password' ? '𖠂' : '⌣';
         });
 
         // Form submission
