@@ -1,6 +1,6 @@
-# 🚗 Amam - Student Ride Sharing Platform
+# 🚗 Amam - Student Ride Sharing App
 
-A beautiful, modern ride-sharing platform **exclusively for university students**. Connect verified student drivers with student riders for safe transportation to campus and metro stations. Built with real-time tracking, live chat, and admin verification.
+A Modern ride-sharing App **exclusively for imam university**.
 
 ![Amam Logo](https://img.shields.io/badge/Amam-Student%20Ride%20Sharing-blue?style=for-the-badge)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
@@ -9,7 +9,7 @@ A beautiful, modern ride-sharing platform **exclusively for university students*
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)
 ![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=flat&logo=socket.io&logoColor=white)
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Key Features](#key-features)
@@ -21,42 +21,42 @@ A beautiful, modern ride-sharing platform **exclusively for university students*
 - [Technologies](#technologies)
 - [Security](#security)
 
-## 🌟 Overview
+## Overview
 
-Amam is a student-only ride-sharing platform that ensures safety through mandatory university verification. Both riders and drivers must be verified students, creating a trusted campus community for affordable, convenient transportation.
+Amam is a student ride-sharing platform that ensures safety through mandatory university verification. Both riders and drivers must be verified students, creating a trusted campus community for affordable, convenient transportation.
 
-## ✨ Key Features
+## Features
 
-### 🎓 Student Verification System
+###  Student Verification System
 - **University Email Required** - All users must register with .edu email addresses
 - **Student ID Verification** - Admin verification of student credentials before account activation
 - **Driver Background Checks** - Additional verification for student drivers (license, vehicle, insurance)
 - **Trusted Community** - Only verified students can access the platform
 
-### 🗺️ Real-Time Ride Tracking
+### Real-Time Ride Tracking
 - **Live GPS Tracking** - See your driver's location in real-time using Leaflet.js maps
 - **Route Visualization** - Visual route from driver to student with ETA updates
 - **Location Updates** - Automatic location refresh via Socket.io
 - **Map Controls** - Center map, toggle traffic, zoom controls
 
-### 💬 Instant Messaging
+### Instant Messaging
 - **Real-Time Chat** - Communicate with your driver using Socket.io
 - **Typing Indicators** - See when your driver is typing
 - **Message History** - Full conversation history during ride
 - **Instant Notifications** - Get notified of new messages immediately
 
-### 🚗 Smart Ride Matching
+###  Smart Ride Matching
 - **Automatic Driver Matching** - Find the nearest available student driver
 - **Campus Routes** - Preset destinations (university buildings, dorms, metro stations)
 - **Passenger Selection** - Choose number of passengers (1-4)
 - **Fair Pricing** - Student-friendly rates
 
-### 👤 Role-Based Access
+### Role-Based Access
 - **Student (Rider)** - Request rides, track drivers, chat
 - **Student Driver** - Accept rides, update location, earn money
 - **Admin** - Verify students, manage platform, ensure safety
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 project/
@@ -74,7 +74,7 @@ project/
 └── DASHBOARDS.md               # Complete dashboard guide
 ```
 
-## 🚀 Installation
+## Installation
 
 ### Prerequisites
 - **Node.js** (v14 or higher)
@@ -107,7 +107,7 @@ project/
    http://localhost:3000
    ```
 
-## 💻 Usage
+## Usage
 
 ### For Students (Riders)
 
@@ -152,7 +152,7 @@ project/
 3. **Approve Drivers** - Check driver licenses and vehicle registration
 4. **Monitor Platform** - Ensure safety and compliance
 
-## 📄 Pages
+## Pages
 
 ### 1. Landing Page (`index.html`)
 - Student-focused messaging
@@ -181,8 +181,8 @@ project/
   - Request/Cancel buttons
   
 - **Center Panel**: Interactive Map
-  - Student location marker 📍
-  - Driver location marker 🚗
+  - Student location marker 
+  - Driver location marker 
   - Route visualization
   - Real-time updates
   
@@ -192,7 +192,7 @@ project/
   - Send messages
   - Driver info display
 
-## 🔄 Real-Time Features
+## Real-Time Features
 
 ### Socket.io Events
 
@@ -213,12 +213,12 @@ project/
 
 ### Map Integration (Leaflet.js)
 - OpenStreetMap tiles
-- Custom markers (📍 student, 🚗 driver)
+- Custom markers (student, driver)
 - Polyline route visualization
 - Auto-centering and zoom
 - Real-time position updates
 
-## 🛠️ Technologies
+## Technologies
 
 ### Frontend
 - **HTML5** - Semantic markup
@@ -237,7 +237,7 @@ project/
 - **OpenStreetMap** - Map tiles and routing
 - **Geolocation API** - User location
 
-## 🔒 Security
+## Security
 
 ### Authentication
 - University email verification (.edu required)
@@ -264,7 +264,7 @@ project/
 - Emergency contact options
 - Trip history and receipts
 
-## 🎨 Design
+## Design
 
 ### Color Palette
 - **Primary Blues**: `#1e40af`, `#2563eb`, `#3b82f6`
@@ -277,7 +277,7 @@ project/
 - Tablet: 2-column layout
 - Mobile: Stacked layout
 
-## 📋 To-Do List
+## To-Do List
 
 - [x] Landing page with student focus
 - [x] Login with role selection
@@ -295,7 +295,7 @@ project/
 - [ ] Analytics dashboard
 - [ ] Mobile app (React Native)
 
-## 🚀 Deployment
+## Deployment
 
 ### Environment Variables
 Create a `.env` file:
@@ -318,16 +318,16 @@ SESSION_SECRET=your_secret_key
 - [ ] Implement rate limiting
 - [ ] Add error handling middleware
 
-## 📧 Contact
+## Contact
 
 - **Project**: Amam Student Ride Sharing
 - **Support**: support@amam-student.edu (example)
 
-## 📄 License
+## License
 
 MIT License - See LICENSE file for details
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - OpenStreetMap for map tiles
 - Socket.io for real-time communication
@@ -336,11 +336,11 @@ MIT License - See LICENSE file for details
 
 ---
 
-**Made with ❤️ for safer student transportation**
+
 
 © 2025 Amam Student. Verified students only. Making campus commutes better.
 
-## ✨ Features
+## Features
 
 ### Landing Page (index.html)
 - **Responsive Navigation Bar** - Fixed header with smooth blur effect
@@ -361,7 +361,7 @@ MIT License - See LICENSE file for details
 - **Form Validation** - Client-side input validation
 - **Error Handling** - User-friendly error messages
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 project/
@@ -372,7 +372,7 @@ project/
 └── README.md              # Project documentation
 ```
 
-## 🚀 Installation
+## Installation
 
 ### Prerequisites
 - Node.js (v12 or higher)
@@ -401,7 +401,7 @@ project/
    http://localhost:3000
    ```
 
-## 💻 Usage
+## Usage
 
 ### Development
 - The main landing page is accessible at the root URL
@@ -414,7 +414,7 @@ project/
 - **Images**: Replace emoji icons with actual images or SVG files
 - **Functionality**: Extend JavaScript in the `<script>` sections
 
-## 📄 Pages
+## Pages
 
 ### 1. Landing Page (`index.html`)
 The main homepage featuring:
@@ -451,7 +451,7 @@ Secure authentication page featuring:
 - Input focus effects
 - Demo login functionality
 
-## 🎨 Design
+## Design
 
 ### Color Palette
 - **Primary Blue**: `#1e40af`, `#2563eb`, `#3b82f6`
