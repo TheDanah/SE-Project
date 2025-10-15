@@ -475,7 +475,7 @@ Secure authentication page featuring:
 - **Desktop**: > 768px
 - **Tablet/Mobile**: ≤ 768px
 
-## 🛠️ Technologies
+## Technologies
 
 - **HTML5** - Semantic markup
 - **CSS3** - Modern styling with gradients, animations, and flexbox/grid
@@ -483,7 +483,7 @@ Secure authentication page featuring:
 - **Node.js** - Server (if applicable)
 - **No external frameworks** - Pure vanilla code for lightweight performance
 
-## 🎯 Features Breakdown
+## Features Breakdown
 
 ### Security Features
 - Password masking/unmasking
@@ -509,7 +509,7 @@ Secure authentication page featuring:
 - Mobile-first responsive design
 - Visual feedback on interactions
 
-## 📱 Browser Support
+## Browser Support
 
 - ✅ Chrome (latest)
 - ✅ Firefox (latest)
@@ -517,7 +517,7 @@ Secure authentication page featuring:
 - ✅ Edge (latest)
 - ✅ Mobile browsers (iOS Safari, Chrome Mobile)
 
-## 🤝 Contributing
+
 
 Contributions are welcome! Please follow these steps:
 
@@ -534,7 +534,7 @@ Contributions are welcome! Please follow these steps:
 - Ensure responsive design
 - Test on multiple browsers
 
-## 📝 To-Do List
+## To-Do List
 
 - [ ] Add backend authentication API
 - [ ] Implement actual social login integration
@@ -547,7 +547,7 @@ Contributions are welcome! Please follow these steps:
 - [ ] Implement payment gateway
 - [ ] Add admin panel
 
-## 📧 Contact
+## Contact
 
 For questions or feedback, please reach out:
 
@@ -555,11 +555,10 @@ For questions or feedback, please reach out:
 - **Email**: support@amam.com (example)
 - **Website**: [www.amam.com](https://www.amam.com) (example)
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
 
 - Design inspiration from modern ride-sharing apps
 - Icons: Emoji-based for simplicity
@@ -567,6 +566,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Made with ❤️ for better transportation**
+
 
 © 2025 Amam. All rights reserved. Making every journey count.
