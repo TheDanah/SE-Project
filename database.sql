@@ -19,6 +19,14 @@ CREATE TABLE users (
     -- Make enum for account type (student, faculty member, admin)
     account_type VARCHAR(20) DEFAULT 'student',
     is_verified BOOLEAN DEFAULT FALSE,
+    -- Login protection
+    failed_login_attempts INTEGER DEFAULT 0,
+    locked_until TIMESTAMP,
+    -- Admin suspension metadata
+    is_suspended BOOLEAN DEFAULT FALSE,
+    suspended_at TIMESTAMP,
+    suspended_by UUID REFERENCES users(id),
+    suspension_reason TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

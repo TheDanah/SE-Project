@@ -1,3 +1,4 @@
+const PORT = process.env.PORT || 3000; // Confirming the correct port setting
 // This file contains the new server code with PostgreSQL integration
 // Please copy this content to server.js after backing up the old one
 
@@ -44,6 +45,38 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(express.static(__dirname));
+
+// Admin authorization middleware (same pattern as in server.js)
+function requireAdmin(req, res, next) {
+    try {
+        const adminKey = process.env.ADMIN_KEY;
+        // 1) If ADMIN_KEY is set, allow requests that present it via header `x-admin-key` or query param
+        if (adminKey) {
+            const provided = req.headers['x-admin-key'] || req.query.adminKey || (req.body && req.body.adminKey);
+            if (provided && provided === adminKey) return next();
+            return res.status(401).json({ error: 'Missing or invalid admin key' });
+        }
+
+        // 2) Otherwise, accept a Bearer JWT and verify accountType or role === 'admin'
+        const auth = req.headers.authorization || req.headers.Authorization;
+        if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'Missing admin token' });
+        const token = auth.split(' ')[1];
+        try {
+            const payload = jwt.verify(token, JWT_SECRET);
+            if (payload && (payload.accountType === 'admin' || payload.role === 'admin')) {
+                // attach adminId for downstream handlers
+                req.adminId = payload.userId || payload.userID || payload.id;
+                return next();
+            }
+            return res.status(403).json({ error: 'Not an admin' });
+        } catch (e) {
+            return res.status(401).json({ error: 'Invalid admin token' });
+        }
+    } catch (e) {
+        console.warn('requireAdmin error', e);
+        return res.status(500).json({ error: 'Server error' });
+    }
+}
 
 // In-memory storage for active sessions
 const activeSockets = new Map();
@@ -193,15 +226,57 @@ app.post('/api/check-email-verified', async (req, res) => {
 app.post('/api/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        
+        // Protection: track failed login attempts and temporary suspension
+        const MAX_FAILED_ATTEMPTS = 5;
+        const LOCK_MINUTES = 15; // lock duration in minutes
+
+        // Look up user record by email to check lock state and to update counters
+        const userRowRes = await pool.query(
+            'SELECT id, failed_login_attempts, locked_until, is_suspended, suspension_reason FROM users WHERE email = $1',
+            [email]
+        );
+        const userRow = userRowRes.rows[0];
+
+        // If account is administratively suspended, reject early
+        if (userRow && userRow.is_suspended) {
+            return res.status(403).json({ error: 'Account suspended by admin', reason: userRow.suspension_reason });
+        }
+
+        // If account is currently locked due to failed attempts, reject early
+        if (userRow && userRow.locked_until && new Date(userRow.locked_until) > new Date()) {
+            return res.status(403).json({ error: 'Account temporarily suspended', lockedUntil: userRow.locked_until });
+        }
+
         // Step 1: Verify credentials with Supabase Auth
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
             email: email,
             password: password
         });
-        
+
         if (authError || !authData.user) {
+            // Invalid credentials: increment failed attempts for the known user
+            if (userRow) {
+                const attempts = (userRow.failed_login_attempts || 0) + 1;
+                if (attempts >= MAX_FAILED_ATTEMPTS) {
+                    const until = new Date(Date.now() + LOCK_MINUTES * 60 * 1000);
+                    const lockedUntil = until.toISOString();
+                    await pool.query(
+                        'UPDATE users SET failed_login_attempts = $1, locked_until = $2 WHERE id = $3',
+                        [attempts, lockedUntil, userRow.id]
+                    );
+                    return res.status(429).json({ error: `Account suspended until ${lockedUntil}` });
+                } else {
+                    await pool.query('UPDATE users SET failed_login_attempts = $1 WHERE id = $2', [attempts, userRow.id]);
+                    const attemptsLeft = MAX_FAILED_ATTEMPTS - attempts;
+                    return res.status(401).json({ error: 'Invalid credentials', attemptsLeft });
+                }
+            }
             return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        // Successful authentication: reset counters if a user row exists
+        if (userRow) {
+            await pool.query('UPDATE users SET failed_login_attempts = 0, locked_until = NULL WHERE id = $1', [userRow.id]);
         }
 
         // Step 2: Check if email is verified
@@ -269,6 +344,55 @@ app.post('/api/login', async (req, res) => {
 });
 
 // ==================== DRIVER APPLICATION ENDPOINTS ====================
+
+// Admin: suspend or unsuspend a user (ban-for-life unless unbanned by admin)
+app.post('/api/admin/suspend-user', requireAdmin, async (req, res) => {
+    try {
+        const { userId, action = 'suspend', reason } = req.body;
+
+        if (!userId) return res.status(400).json({ error: 'userId is required' });
+
+        if (action === 'suspend') {
+            const suspendedAt = new Date().toISOString();
+            await pool.query(
+                `UPDATE users SET is_suspended = TRUE, suspended_at = $1, suspended_by = $2, suspension_reason = $3 WHERE id = $4`,
+                [suspendedAt, req.adminId || null, reason || null, userId]
+            );
+
+            // If user has an active socket session, disconnect them immediately
+            try {
+                const socketId = activeSockets.get(userId);
+                if (socketId) {
+                    const sock = io.sockets.sockets.get(socketId);
+                    if (sock) {
+                        // notify client then disconnect
+                        sock.emit('forceLogout', { reason: reason || 'Account suspended by admin' });
+                        sock.disconnect(true);
+                    }
+                    activeSockets.delete(userId);
+                    onlineDrivers.delete(userId);
+                }
+            } catch (e) {
+                console.warn('Failed to disconnect active socket for suspended user', userId, e);
+            }
+
+            return res.json({ success: true, message: 'User suspended', suspendedAt });
+        }
+
+        if (action === 'unsuspend' || action === 'unban') {
+            await pool.query(
+                `UPDATE users SET is_suspended = FALSE, suspended_at = NULL, suspended_by = NULL, suspension_reason = NULL WHERE id = $1`,
+                [userId]
+            );
+            return res.json({ success: true, message: 'User unsuspended' });
+        }
+
+        return res.status(400).json({ error: 'Invalid action. Use "suspend" or "unsuspend".' });
+    } catch (error) {
+        console.error('Admin suspend error:', error);
+        return res.status(500).json({ error: 'Failed to update suspension' });
+    }
+});
 
 app.post('/api/driver-application', async (req, res) => {
     try {
