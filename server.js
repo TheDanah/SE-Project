@@ -18,11 +18,13 @@ const io = new Server(server);
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'amam_secret_key';
 
-// Initialize Supabase Auth client
-const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+// Initialize Supabase clients
+// - `supabaseAdmin` uses the service role key when available (required for admin actions)
+// - `supabase` is an anon client used for public auth actions like signUp/signIn
+const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+    : null;
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 // PostgreSQL connection
 const pool = new Pool({
@@ -112,18 +114,19 @@ app.post('/api/register', async (req, res) => {
             return res.status(400).json({ error: 'Must use university email (sm.imamu.edu.sa)' });
         }
         
-        // Step 1: Create user in Supabase Auth
-        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        // Step 1: Create user in Supabase Auth using anon client (no service role required)
+        // Frontend can also call `supabase.auth.signUp` directly; here we call signUp server-side
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email: email,
-            password: password,
-            email_confirm: false  // User must verify email
+            password: password
         });
 
-        if (authError) {
-            return res.status(400).json({ error: authError.message });
+        if (signUpError) {
+            console.log("I am the mistake");
+            return res.status(400).json({ error: signUpError.message });
         }
 
-        const authUserId = authData.user.id;
+        const authUserId = signUpData.user?.id;
 
         // Step 2: Create user in PostgreSQL users table with Supabase Auth ID
         const result = await pool.query(
@@ -134,18 +137,8 @@ app.post('/api/register', async (req, res) => {
         
         const user = result.rows[0];
         
-        // Step 3: Send verification email
-        const { error: emailError } = await supabase.auth.resend({
-            type: 'signup',
-            email: email
-        });
-
-        if (emailError) {
-            console.warn('Warning: Could not send verification email:', emailError.message);
-            // Don't fail registration if email sending fails
-        } else {
-            console.log('✅ Verification email sent to:', email);
-        }
+        // Supabase sends verification emails on signUp by default (if configured).
+        console.log('✅ Supabase signUp succeeded for:', email);
         
         const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
         
@@ -190,8 +183,11 @@ app.post('/api/send-verification-email', async (req, res) => {
             return res.status(400).json({ error: 'Invalid credentials' });
         }
 
-        // Resend verification email
-        const { error: resendError } = await supabase.auth.resend({
+        // Resend verification email — requires service role key server-side
+        if (!supabaseAdmin) {
+            return res.status(403).json({ error: 'Resend not supported server-side without SUPABASE_SERVICE_ROLE_KEY. Use frontend to request resend.' });
+        }
+        const { error: resendError } = await supabaseAdmin.auth.resend({
             type: 'signup',
             email: email
         });
@@ -220,8 +216,11 @@ app.post('/api/check-email-verified', async (req, res) => {
             return res.status(400).json({ error: 'Email required' });
         }
 
-        // Get user from Supabase Auth
-        const { data, error } = await supabase.auth.admin.listUsers();
+        // Get user from Supabase Auth (requires service role key)
+        if (!supabaseAdmin) {
+            return res.status(403).json({ error: 'Admin operations require SUPABASE_SERVICE_ROLE_KEY' });
+        }
+        const { data, error } = await supabaseAdmin.auth.admin.listUsers();
 
         if (error) {
             return res.status(400).json({ error: error.message });
