@@ -5,7 +5,7 @@ import time
 URL = "http://localhost:3000/signup.html"
 
 TOTAL_REQUESTS = 200
-DELAY_SECONDS = 1
+DELAY_SECONDS = 36
 
 success = 0
 fail = 0
