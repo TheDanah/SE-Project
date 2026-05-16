@@ -212,6 +212,15 @@
             document.getElementById('errorContent').style.display = 'block';
         }
 
+        
+        function verifyStudent(emailVerified, studentProof) {
+            if (!emailVerified || !studentProof) {
+                return "Account suspended";
+            } else {
+                return "Account active";
+            }
+        }
+
         // Check verification on page load
         window.onload = checkVerificationStatus;
     </script>
