@@ -1,4 +1,3 @@
-const PORT = process.env.PORT || 3000; // Confirming the correct port setting
 // This file contains the new server code with PostgreSQL integration
 // Please copy this content to server.js after backing up the old one
 
@@ -19,26 +18,83 @@ const io = new Server(server);
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'amam_secret_key';
 
-// Initialize Supabase clients
-const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
-    ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
-    : null;
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+// Initialize Supabase clients (use mocks when env vars are missing)
+let supabaseAdmin = null;
+let supabase = null;
+if (process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
+    supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
+        ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+        : null;
+    supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+} else {
+    // Minimal mock that supports the methods used in this server for local testing
+    supabaseAdmin = null;
+    supabase = {
+        auth: {
+            signUp: async ({ email, password }) => ({ data: { user: { id: 'mock-user-1', email } }, error: null }),
+            signInWithPassword: async ({ email, password }) => ({ data: { user: { id: 'mock-user-1', email, email_confirmed_at: new Date().toISOString() } }, error: null })
+        }
+    };
+}
 
-// PostgreSQL connection
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }  // Required for Supabase
-});
+// PostgreSQL connection: use real pool when DATABASE_URL present, otherwise a lightweight in-memory mock
+let pool;
+if (process.env.DATABASE_URL) {
+    pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false }  // Required for Supabase
+    });
 
-// Test database connection
-pool.query('SELECT NOW()', (err, res) => {
-    if (err) {
-        console.error('❌ Database connection error:', err);
-    } else {
-        console.log('✅ Database connected at:', res.rows[0].now);
-    }
-});
+    // Test database connection
+    pool.query('SELECT NOW()', (err, res) => {
+        if (err) {
+            console.error('❌ Database connection error:', err);
+        } else {
+            console.log('✅ Database connected at:', res.rows[0].now);
+        }
+    });
+} else {
+    // In-memory mock for `pool.query` that supports the rides insert and simple selects used by tests
+    let nextId = 1;
+    const rides = [];
+    pool = {
+        query: async (text, params) => {
+            const t = (text || '').toUpperCase();
+            if (t.includes('SELECT NOW()')) {
+                return { rows: [{ now: new Date().toISOString() }] };
+            }
+
+            if (t.includes('INSERT INTO RIDES')) {
+                const [studentId, pickupLoc, pickupLat, pickupLng, destLoc, destLat, destLng, passengers, fare] = params;
+                const ride = {
+                    id: nextId++,
+                    student_id: studentId,
+                    pickup_location: pickupLoc,
+                    pickup_lat: pickupLat,
+                    pickup_lng: pickupLng,
+                    destination_location: destLoc,
+                    destination_lat: destLat,
+                    destination_lng: destLng,
+                    passengers,
+                    fare,
+                    requested_at: new Date().toISOString(),
+                    status: 'pending'
+                };
+                rides.push(ride);
+                return { rows: [ride] };
+            }
+
+            // Simple select by student id
+            if (t.includes('FROM RIDES') && params && params.length > 0) {
+                const studentId = params[0];
+                return { rows: rides.filter(r => r.student_id === studentId) };
+            }
+
+            return { rows: [] };
+        }
+    };
+    console.log('⚠️ Running with in-memory DB mock (no DATABASE_URL)');
+}
 
 // Middleware
 app.use(express.json());
@@ -137,6 +193,20 @@ app.post('/api/register', async (req, res) => {
         } else {
             res.status(500).json({ error: 'Registration failed: ' + error.message });
         }
+    }
+});
+
+// Check whether an email is already registered
+app.post('/api/check-email-exists', async (req, res) => {
+    try {
+        const { email } = req.body || {};
+        if (!email) return res.status(400).json({ error: 'Email required' });
+        // With in-memory mock pool, this will still work if pool.query is implemented
+        const result = await pool.query('SELECT id FROM users WHERE email = $1', [email.trim().toLowerCase()]);
+        res.json({ exists: result.rows.length > 0 });
+    } catch (error) {
+        console.error('check-email-exists error:', error);
+        res.status(500).json({ error: 'Failed to check email' });
     }
 });
 

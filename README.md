@@ -9,7 +9,7 @@ A Modern ride-sharing App **exclusively for imam university**.
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)
 ![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=flat&logo=socket.io&logoColor=white)
 
-## 📢 Latest Update: Multi-Tab Dashboard 🎉
+//## 📢 Latest Update: Multi-Tab Dashboard 🎉
 
 **November 5, 2025** - Complete dashboard redesign with 4-tab navigation system:
 
@@ -49,27 +49,27 @@ Amam is a student ride-sharing platform that ensures safety through mandatory un
 
 ## Dashboard Documentation
 
-**[📖 Dashboard Architecture Guide](./DASHBOARD_ARCHITECTURE.md)** - Technical implementation details
-- Multi-tab interface design (4 tabs for students, 3 for faculty)
-- Component structure and layout system
+**[Dashboard Architecture Guide](./DASHBOARD_ARCHITECTURE.md)** //- Technical implementation details
+//- Multi-tab interface design (4 tabs for students, 3 for faculty)
+//- Component structure and layout system
 - API integration patterns
 - Real-time Socket.IO events
 
-**[👥 User Guide](./DASHBOARD_GUIDE.md)** - Complete feature walkthrough
+**[User Guide](./DASHBOARD_GUIDE.md)** - Complete feature walkthrough
 - How to request a ride
 - Announcements and university events
 - Driver application process
 - Profile and settings management
 
-**[🔐 Authentication Flow](./LOGIN_REDIRECT_GUIDE.md)** - Role-based access
+**[Authentication Flow](./LOGIN_REDIRECT_GUIDE.md)** - Role-based access
 - Login verification process
 - Role detection and tab visibility
 - Email verification requirements
 - Redirect logic for students, faculty, and drivers
 
-**[✅ QA Checklist](./IMPLEMENTATION_CHECKLIST.md)** - Testing procedures
-- 50+ manual test cases
-- Mobile responsiveness tests
+**[QA Checklist](./IMPLEMENTATION_CHECKLIST.md)** - Testing procedures
+-// 50+ manual test cases
+- //Mobile responsiveness tests
 - API endpoint verification
 - Real-time feature testing
 
@@ -82,8 +82,7 @@ Amam is a student ride-sharing platform that ensures safety through mandatory un
 ## Features
 
 ###  Student Verification System
-- **University Email Required** - All users must register with .edu email addresses
-- **Student ID Verification** - Admin verification of student credentials before account activation
+- **University Email Required** - All students must register with @sm.imamu.edu.sa email addresses
 - **Driver Background Checks** - Additional verification for student drivers (license, vehicle, insurance)
 - **Trusted Community** - Only verified students can access the platform
 
@@ -166,13 +165,13 @@ project/
 ### For Students (Riders)
 
 1. **Sign Up** - Visit signup.html and register with:
-   - University email (.edu)
+   - University email (@sm.imamu.edu.sa)
    - Student ID
    - Personal information
    
-2. **Wait for Verification** - Admin will verify your credentials (24-48 hours)
+2. **Wait for Verification** - Verify your account usin the authentication link
 
-3. **Login** - Use login.html with role "Student (Rider)"
+3. **Login** - Use login.html 
 
 4. **Request Ride**:
    - Enter pickup location
@@ -187,15 +186,14 @@ project/
 
 ### For Student Drivers
 
-1. **Sign Up** - Complete driver registration with:
-   - All student requirements
+1. **Driver Application** - Complete driver registration with:
    - Driver's license number
    - Vehicle information
    - License plate
 
-2. **Verification** - Admin verifies student status + driver credentials
+2. **Verification** - Admin verifies driver credentials
 
-3. **Login** - Use role "Student Driver"
+3. **Login** - Use login.html
 
 4. **Accept Rides** - Dashboard shows nearby ride requests
 
@@ -206,45 +204,45 @@ project/
 3. **Approve Drivers** - Check driver licenses and vehicle registration
 4. **Monitor Platform** - Ensure safety and compliance
 
-## Pages
+//## Pages
 
-### 1. Landing Page (`index.html`)
-- Student-focused messaging
-- Features: verification, tracking, chat, campus routes
-- Statistics and testimonials
-- Call-to-action for signup
+//### 1. Landing Page (`index.html`)
+//- Student-focused messaging
+//- Features: verification, tracking, chat, campus routes
+//- Statistics and testimonials
+//- Call-to-action for signup
 
-### 2. Login Page (`login.html`)
-- **Role Selection**: Student, Driver, or Admin
-- **Fields**: Username, University Email, Password
-- **Validation**: .edu email required for students/drivers
-- **Redirects**: Role-based dashboard routing
+//### 2. Login Page (`login.html`)
+//- **Role Selection**: Student, Driver, or Admin
+//- **Fields**: Username, University Email, Password
+//- **Validation**: .edu email required for students/drivers
+//- **Redirects**: Role-based dashboard routing
 
-### 3. Signup Page (`signup.html`)
-- Account type selection (Student/Driver)
-- University email validation
-- Student ID collection
-- Driver-specific fields (conditional)
-- Pending admin verification notice
+//### 3. Signup Page (`signup.html`)
+//- Account type selection (Student/Driver)
+//- University email validation
+//- Student ID collection
+//- Driver-specific fields (conditional)
+//- Pending admin verification notice
 
-### 4. Student Dashboard (`student-dashboard.html`)
-- **Left Panel**: Ride request form
-  - Pickup location
-  - Destination selector
-  - Passenger count
-  - Request/Cancel buttons
+//### 4. Student Dashboard (`student-dashboard.html`)
+//- **Left Panel**: Ride request form
+  //- Pickup location
+  //- Destination selector
+  //- Passenger count
+  //- Request/Cancel buttons
   
-- **Center Panel**: Interactive Map
-  - Student location marker 
-  - Driver location marker 
-  - Route visualization
-  - Real-time updates
+//- **Center Panel**: Interactive Map
+  //- Student location marker 
+  //- Driver location marker 
+ // - Route visualization
+  //- Real-time updates
   
-- **Right Panel**: Live Chat
-  - Message history
-  - Typing indicators
-  - Send messages
-  - Driver info display
+//- **Right Panel**: Live Chat
+ // - Message history
+  //- Typing indicators
+  //- Send messages
+  //- Driver info display
 
 ## Real-Time Features
 
@@ -294,7 +292,7 @@ project/
 ## Security
 
 ### Authentication
-- University email verification (.edu required)
+- University email verification (@sm.imamu.edu.sa required)
 - Password hashing (implement bcrypt in production)
 - Session management
 - Role-based access control
@@ -375,11 +373,11 @@ SESSION_SECRET=your_secret_key
 ## Contact
 
 - **Project**: Amam Student Ride Sharing
-- **Support**: support@amam-student.edu (example)
+//- **Support**: support@amam-student.edu (example)
 
-## License
+//## License
 
-MIT License - See LICENSE file for details
+//MIT License - See LICENSE file for details
 
 ## Acknowledgments
 
@@ -392,11 +390,11 @@ MIT License - See LICENSE file for details
 
 
 
-© 2025 Amam Student. Verified students only. Making campus commutes better.
+© 2026 Amam Student. Verified students only. Making campus commutes better.
 
-## Features
+*/ ## Features
 
-### Landing Page (index.html)
+//### Landing Page (index.html)
 - **Responsive Navigation Bar** - Fixed header with smooth blur effect
 - **Hero Section** - Eye-catching headline with animated phone mockup
 - **Features Grid** - Showcase 6 key platform features
@@ -405,7 +403,7 @@ MIT License - See LICENSE file for details
 - **Call-to-Action** - Download buttons for mobile apps
 - **Comprehensive Footer** - Company info and links
 
-### Login Page (login.html)
+//### Login Page (login.html)
 - **Secure Login Form** - Email and password authentication
 - **Password Toggle** - Show/hide password functionality
 - **Remember Me** - Session persistence option
@@ -415,7 +413,7 @@ MIT License - See LICENSE file for details
 - **Form Validation** - Client-side input validation
 - **Error Handling** - User-friendly error messages
 
-## Project Structure
+//## Project Structure
 
 ```
 project/
@@ -426,13 +424,13 @@ project/
 └── README.md              # Project documentation
 ```
 
-## Installation
+#//# Installation
 
-### Prerequisites
+//### Prerequisites
 - Node.js (v12 or higher)
 - npm (Node Package Manager)
 
-### Steps
+//### Steps
 
 1. **Clone the repository**
    ```bash
@@ -455,14 +453,14 @@ project/
    http://localhost:3000
    ```
 
-## Usage
+//## Usage
 
-### Development
+*/### Development
 - The main landing page is accessible at the root URL
 - Login page is accessible via the "Login" button in navigation or at `/login.html`
-- All pages are fully responsive and work on mobile, tablet, and desktop
+- All pages are fully responsive and work on mobile, tablet, and desktop*/
 
-### Customization
+*/### Customization
 - **Colors**: Modify the CSS gradient values in the `<style>` sections
 - **Content**: Update text directly in the HTML files
 - **Images**: Replace emoji icons with actual images or SVG files
@@ -622,4 +620,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 
 
-© 2025 Amam. All rights reserved. Making every journey count.
+© 2025 Amam. All rights reserved. Making every journey count.*/
+
+*/

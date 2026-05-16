@@ -122,7 +122,7 @@ app.post('/api/register', async (req, res) => {
         });
 
         if (signUpError) {
-            console.log("I am the mistake");
+            // console.log("I am the mistake");
             return res.status(400).json({ error: signUpError.message });
         }
 
@@ -161,6 +161,19 @@ app.post('/api/register', async (req, res) => {
         } else {
             res.status(500).json({ error: 'Registration failed: ' + error.message });
         }
+    }
+});
+
+// Check whether an email is already registered
+app.post('/api/check-email-exists', async (req, res) => {
+    try {
+        const { email } = req.body || {};
+        if (!email) return res.status(400).json({ error: 'Email required' });
+        const result = await pool.query('SELECT id FROM users WHERE email = $1', [email.trim().toLowerCase()]);
+        res.json({ exists: result.rows.length > 0 });
+    } catch (error) {
+        console.error('check-email-exists error:', error);
+        res.status(500).json({ error: 'Failed to check email' });
     }
 });
 

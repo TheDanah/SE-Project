@@ -197,11 +197,8 @@
             <div class="form-group">
                 <label for="accountType">Select Role <span class="required">*</span></label>
                 <select id="accountType" class="form-input" required>
-                    <!-- <option value="">Select account type...</option>  -->
                     <option value="student">Student</option>
-                    <option value="driver">Faculty Member</option>
-                                        <!-- <option value="driver">Admin</option> -->
-
+                    <option value="faculty">Faculty Member</option>
                 </select>
 
 
@@ -209,12 +206,12 @@
 
 
             <div class="form-group">
-                <label for="fullName">Name <span class="required">*</span></label>
+                <label for="name">Name <span class="required">*</span></label>
                 <input 
                     type="text" 
                     id="fullName" 
                     class="form-input" 
-                    placeholder="Enter first name"
+                    placeholder="Enter your name"
                     required
                 >
             </div>
@@ -287,42 +284,6 @@
             </div>
         
 
-            <!-- Driver-specific fields -->
-            <!-- <div id="driverFields" style="display: none;">
-                <div class="info-box" style="background: #fef3c7; border-color: #f59e0b; color: #92400e;">
-                    🚗 <strong>Driver Requirements:</strong> Valid driver's license, vehicle registration, and insurance required for verification.
-                </div>
-
-                <div class="form-group">
-                    <label for="licenseNumber">Driver's License Number <span class="required">*</span></label>
-                    <input 
-                        type="text" 
-                        id="licenseNumber" 
-                        class="form-input" 
-                        placeholder="Enter license number"
-                    >
-                </div> 
-
-                 <div class="form-group">
-                    <label for="vehicleMake">Vehicle Make & Model <span class="required">*</span></label>
-                    <input 
-                        type="text" 
-                        id="vehicleMake" 
-                        class="form-input" 
-                        placeholder="e.g., Toyota Camry"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="plateNumber">License Plate <span class="required">*</span></label>
-                    <input 
-                        type="text" 
-                        id="plateNumber" 
-                        class="form-input" 
-                        placeholder="Enter plate number"
-                    >
-                </div> 
-            </div> -->
 
             <button type="submit" class="signup-button">
                 Create Account
@@ -339,98 +300,107 @@
 
     <script>
         const accountType = document.getElementById('accountType');
-        const driverFields = document.getElementById('driverFields');
         const signupForm = document.getElementById('signupForm');
 
-        // Show/hide driver fields
-        accountType.addEventListener('change', function() {
-            if (this.value === 'driver') {
-                driverFields.style.display = 'block';
-                // Make driver fields required
-                document.getElementById('licenseNumber').required = true;
-                document.getElementById('vehicleMake').required = true;
-                document.getElementById('plateNumber').required = true;
-            } else {
-                driverFields.style.display = 'none';
-                // Remove required from driver fields
-                document.getElementById('licenseNumber').required = false;
-                document.getElementById('vehicleMake').required = false;
-                document.getElementById('plateNumber').required = false;
-            }
-        });
+        function showMessage(text) {
+            alert(text);
+        }
 
-        // Form submission
-        signupForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+        if (signupForm) {
+            signupForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
 
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
+                const role = document.getElementById('accountType').value;
+                const fullName = document.getElementById('fullName').value.trim();
+                const username = document.getElementById('username').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
 
-            // Validate university email
-            if (!email.endsWith('sm.imamu.edu.sa')) {
-                alert('Please use your university email address (sm.imamu.edu.sa)');
-                return;
-            }
+                if (!role || !fullName || !username || !email || !password || !confirmPassword) {
+                    showMessage('Invalid required information. Please fill all required fields.');
+                    return;
+                }
 
-            // Validate password match
-            if (password !== confirmPassword) {
-                alert('Passwords do not match!');
-                return;
-            }
+                if (password.length < 8) {
+                    showMessage('Password must be at least 8 characters long.');
+                    return;
+                }
 
-            // Collect form data
-            const formData = {
-                username: document.getElementById('username').value,
-                email: email,
-                password: password,
-                studentId: email.split("@")[0], // Auto-generate student ID
-                university: 'Imam Mohammed Ibn Saud Islamic University',
-                major: 'Not Specified',
-                phone: document.getElementById('fullName').value // Using fullName field as phone for now
-            };
+                if (password !== confirmPassword) {
+                    showMessage('Passwords do not match! Please re-enter them.');
+                    return;
+                }
 
-            try {
-                const response = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
+                const lower = email.toLowerCase();
+                if (role === 'student' && !lower.endsWith('@sm.imamu.edu.sa')) {
+                    showMessage('Invalid university email for Student. Use @sm.imamu.edu.sa');
+                    return;
+                }
+                if (role === 'faculty' && !lower.endsWith('@imamu.edu.sa')) {
+                    showMessage('Invalid university email for Faculty. Use @imamu.edu.sa');
+                    return;
+                }
 
-                const data = await response.json();
+                const studentId = role === 'student' ? email.split('@')[0] : username;
 
-                if (response.ok) {
-                    // Send verification email via Supabase Auth
-                    const emailResponse = await fetch('/api/send-verification-email', {
+                // Pre-check whether email already exists to give immediate feedback
+                try {
+                    const checkRes = await fetch('/api/check-email-exists', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ 
-                            email: email,
-                            password: password 
-                        })
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    });
+                    const checkData = await checkRes.json().catch(() => ({}));
+                    if (checkRes.ok && checkData.exists) {
+                        showMessage('An account already exists with that email. Please log in.');
+                        return;
+                    }
+                } catch (err) {
+                    // Ignore check errors and continue to attempt registration; server will respond accordingly
+                    console.warn('Email check failed, continuing to register', err);
+                }
+
+                const formData = {
+                    username: username,
+                    fullName: fullName,
+                    email: email,
+                    password: password,
+                    studentId: studentId,
+                    university: universityInput || 'Imam Mohammed Ibn Saud Islamic University',
+                    accountType: role
+                };
+
+                try {
+                    const response = await fetch('/api/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
                     });
 
-                    const emailData = await emailResponse.json();
+                    const data = await response.json().catch(() => ({}));
 
-                    if (emailResponse.ok) {
-                        alert('🎉 Account created! Please check your email to verify your account.');
-                        window.location.href = 'login.html';
-                    } else {
-                        alert('✅ Account created! Check your email for verification link (check spam folder too).');
-                        window.location.href = 'login.html';
+                    if (!response.ok) {
+                        const serverMsg = data.error || '';
+                        if (/exists/i.test(serverMsg)) {
+                            showMessage('An account already exists with that email/username/student ID. Please log in.');
+                        } else {
+                            const msg = serverMsg || 'Account creation failed. Please try again.';
+                            showMessage(msg);
+                        }
+                        return;
                     }
-                } else {
-                    alert(data.error || 'Registration failed. Please try again.');
+
+                    
+                    showMessage('Account created. A verification email was sent — please check your inbox (and spam).');
+                    window.location.href = 'login.html';
+
+                } catch (error) {
+                    console.error('Registration/network error:', error);
+                    showMessage('Network error. Please check your connection and try again.');
                 }
-            } catch (error) {
-                console.error('Registration error:', error);
-                alert('Network error. Please try again.');
-            }
-        });
+            });
+        }
     </script>
 </body>
 </html>
