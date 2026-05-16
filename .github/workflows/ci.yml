@@ -1,0 +1,49 @@
+name: CI
+
+on:
+	push:
+	pull_request:
+
+jobs:
+	ci:
+		name: Continuous Integration
+		runs-on: ubuntu-latest
+		steps:
+			- name: Checkout repository
+				uses: actions/checkout@v4
+
+			- name: Detect project type
+				id: detect
+				run: |
+					# Detect Node
+					if [ -f package.json ]; then echo "HAS_NODE=true" >> $GITHUB_ENV; fi
+					# Detect Python
+					if [ -f requirements.txt ] || [ -f pyproject.toml ] || ls *.py >/dev/null 2>&1; then echo "HAS_PY=true" >> $GITHUB_ENV; fi
+
+			- name: Node.js: install, lint and test
+				if: ${{ env.HAS_NODE == 'true' }}
+				uses: actions/setup-node@v4
+				with:
+					node-version: '18'
+
+			- name: Run Node.js scripts
+				if: ${{ env.HAS_NODE == 'true' }}
+				run: |
+					npm ci --silent || npm install --silent
+					npm run lint --if-present
+					npm run test --if-present
+
+			- name: Set up Python
+				if: ${{ env.HAS_PY == 'true' }}
+				uses: actions/setup-python@v4
+				with:
+					python-version: '3.11'
+
+			- name: Python: install deps and run tests
+				if: ${{ env.HAS_PY == 'true' }}
+				run: |
+					if [ -f requirements.txt ]; then python -m pip install --upgrade pip && pip install -r requirements.txt; elif [ -f pyproject.toml ] || [ -f setup.py ]; then python -m pip install -e .; fi
+					if [ -d tests ] || ls test_*.py *_test.py tests/*.py >/dev/null 2>&1; then python -m pytest -q; else echo "No Python tests found"; fi
+
+			- name: Summary
+				run: echo "CI job completed"
