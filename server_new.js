@@ -206,6 +206,9 @@ app.post('/api/check-email-exists', async (req, res) => {
         res.json({ exists: result.rows.length > 0 });
     } catch (error) {
         console.error('check-email-exists error:', error);
+        if (error && (error.code === 'ENOTFOUND' || error.errno === -3008)) {
+            return res.json({ exists: false, warning: 'db_unreachable' });
+        }
         res.status(500).json({ error: 'Failed to check email' });
     }
 });
