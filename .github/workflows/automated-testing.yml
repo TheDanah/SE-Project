@@ -31,10 +31,10 @@ jobs:
           npm start > server.log 2>&1 &
           sleep 10
 
-      - name: Functional test
+      - name: Run functional test
         run: npm run functional-test
 
-      - name: Non-functional test
+      - name: Run non-functional test
         run: |
           echo "Running non-functional performance simulation..." > bookings_results.log
           echo "Requests sent: 10" >> bookings_results.log
@@ -49,3 +49,5 @@ jobs:
           path: |
             server.log
             bookings_results.log
+
+            
