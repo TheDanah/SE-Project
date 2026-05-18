@@ -61,7 +61,7 @@ app.get('/__routes', (req, res) => {
       }
     });
     res.json({ routes });
-  } catch (e) {
+  } catch (_) {
     res.status(500).json({ error: String(e) });
   }
 });
@@ -251,7 +251,7 @@ app.post('/api/login', async (req, res) => {
           'Supabase signInWithPassword error:',
           authError && (authError.message || authError)
         );
-      } catch (e) {
+      } catch (_) {
         console.warn('Error logging authError', e);
       }
       return res.status(401).json({ error: 'Invalid credentials' });
@@ -559,12 +559,12 @@ app.post('/api/announcements', requireAdmin, async (req, res) => {
     // Broadcast to all connected clients; clients will decide how to render
     try {
       io.emit('newAnnouncement', { announcement });
-    } catch (e) {
+    } catch (_) {
       console.warn('Failed to emit newAnnouncement', e);
     }
 
     res.json({ success: true, announcement });
-  } catch (e) {
+  } catch (_) {
     console.error('Create announcement error:', e);
     res.status(500).json({ error: 'Failed to create announcement' });
   }
@@ -574,7 +574,7 @@ app.get('/api/announcements', async (req, res) => {
   try {
     const r = await pool.query('SELECT * FROM announcements ORDER BY created_at DESC LIMIT 100');
     res.json({ announcements: r.rows });
-  } catch (e) {
+  } catch (_) {
     console.error('Get announcements error:', e);
     res.status(500).json({ error: 'Failed to fetch announcements' });
   }
@@ -616,12 +616,12 @@ app.put('/api/announcements/:id', requireAdmin, async (req, res) => {
 
     try {
       io.emit('announcementUpdated', { announcement });
-    } catch (e) {
+    } catch (_) {
       console.warn('Failed to emit announcementUpdated', e);
     }
 
     res.json({ success: true, announcement });
-  } catch (e) {
+  } catch (_) {
     console.error('Update announcement error:', e);
     res.status(500).json({ error: 'Failed to update announcement' });
   }
@@ -636,12 +636,12 @@ app.delete('/api/announcements/:id', requireAdmin, async (req, res) => {
 
     try {
       io.emit('announcementDeleted', { id });
-    } catch (e) {
+    } catch (_) {
       console.warn('Failed to emit announcementDeleted', e);
     }
 
     res.json({ success: true, id: del.rows[0].id });
-  } catch (e) {
+  } catch (_) {
     console.error('Delete announcement error:', e);
     res.status(500).json({ error: 'Failed to delete announcement' });
   }
@@ -678,7 +678,7 @@ app.post('/api/tickets', async (req, res) => {
     // Notify admins via socket room and queue for offline admins
     try {
       io.to('admins').emit('newTicket', { ticket });
-    } catch (e) {
+    } catch (_) {
       console.warn('Failed to emit newTicket to admins room', e);
     }
 
@@ -691,7 +691,7 @@ app.post('/api/tickets', async (req, res) => {
         if (sockId && io && io.to) {
           try {
             io.to(sockId).emit('newTicket', { ticket });
-          } catch (e) {
+          } catch (_) {
             console.warn('Direct admin emit failed', e);
           }
         } else {
@@ -700,12 +700,12 @@ app.post('/api/tickets', async (req, res) => {
           pendingNotifications.set(adminId, arr);
         }
       }
-    } catch (e) {
+    } catch (_) {
       console.warn('Error delivering newTicket to admins', e);
     }
 
     res.json({ success: true, ticket });
-  } catch (e) {
+  } catch (_) {
     console.error('POST /api/tickets error', e);
     res.status(500).json({ error: 'Failed to create ticket' });
   }
@@ -720,7 +720,7 @@ app.get('/api/users/:userId/tickets', async (req, res) => {
       [userId]
     );
     res.json({ tickets: r.rows });
-  } catch (e) {
+  } catch (_) {
     console.error('GET /api/users/:userId/tickets error', e);
     res.status(500).json({ error: 'Failed to fetch tickets' });
   }
@@ -737,7 +737,7 @@ app.get('/api/admin/tickets', requireAdmin, async (req, res) => {
       params
     );
     res.json({ tickets: r.rows });
-  } catch (e) {
+  } catch (_) {
     console.error('GET /api/admin/tickets error', e);
     res.status(500).json({ error: 'Failed to fetch admin tickets' });
   }
@@ -770,12 +770,12 @@ app.post('/api/admin/tickets/:ticketId/review', requireAdmin, async (req, res) =
         arr.push({ type: 'ticketUpdated', payload: ticket });
         pendingNotifications.set(ticket.user_id, arr);
       }
-    } catch (e) {
+    } catch (_) {
       console.warn('Failed to notify ticket owner', e);
     }
 
     res.json({ success: true, ticket });
-  } catch (e) {
+  } catch (_) {
     console.error('POST /api/admin/tickets/:ticketId/review error', e);
     res.status(500).json({ error: 'Failed to review ticket' });
   }
@@ -824,7 +824,7 @@ app.post('/api/admin/review-driver', requireAdmin, async (req, res) => {
               payload
             );
             delivered = true;
-          } catch (e) {
+          } catch (_) {
             console.warn('Direct emit failed', e.message || e);
           }
         }
@@ -841,7 +841,7 @@ app.post('/api/admin/review-driver', requireAdmin, async (req, res) => {
           } else {
             console.log(`Room ${room} has no members right now`);
           }
-        } catch (e) {
+        } catch (_) {
           console.warn('Failed to emit to user room:', e.message || e);
         }
 
@@ -854,7 +854,7 @@ app.post('/api/admin/review-driver', requireAdmin, async (req, res) => {
             `Stored pending notification for user ${userId}. Total pending: ${arr.length}`
           );
         }
-      } catch (e) {
+      } catch (_) {
         console.warn('Failed to emit driverStatusUpdated:', e.message || e);
       }
     }
@@ -876,7 +876,7 @@ app.get('/api/users/me', async (req, res) => {
     let payload;
     try {
       payload = jwt.verify(token, JWT_SECRET);
-    } catch (err) {
+    } catch (_) {
       return res.status(401).json({ error: 'Invalid token' });
     }
 
@@ -943,7 +943,7 @@ app.post('/api/users/update', async (req, res) => {
     let payload;
     try {
       payload = jwt.verify(token, JWT_SECRET);
-    } catch (err) {
+    } catch (_) {
       return res.status(401).json({ error: 'Invalid token' });
     }
 
@@ -962,7 +962,7 @@ app.post('/api/users/update', async (req, res) => {
       await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS gender VARCHAR(50)');
       await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS full_name VARCHAR(200)');
       await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar TEXT');
-    } catch (e) {
+    } catch (_) {
       console.warn('Could not ensure optional profile columns exist:', e.message || e);
     }
     if (username !== undefined) {
@@ -981,7 +981,7 @@ app.post('/api/users/update', async (req, res) => {
       // ensure gender column exists for older schemas
       try {
         await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS gender VARCHAR(50)');
-      } catch (e) {
+      } catch (_) {
         console.warn('Could not ensure gender column exists:', e.message || e);
       }
       updates.push(`gender = $${idx++}`);
@@ -991,7 +991,7 @@ app.post('/api/users/update', async (req, res) => {
       // ensure the column exists (safe to run on every request)
       try {
         await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS full_name VARCHAR(200)');
-      } catch (e) {
+      } catch (_) {
         console.warn('Could not ensure full_name column exists:', e.message || e);
       }
       updates.push(`full_name = $${idx++}`);
@@ -1001,7 +1001,7 @@ app.post('/api/users/update', async (req, res) => {
       // ensure avatar column exists
       try {
         await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar TEXT');
-      } catch (e) {
+      } catch (_) {
         console.warn('Could not ensure avatar column exists:', e.message || e);
       }
       updates.push(`avatar = $${idx++}`);
@@ -1116,7 +1116,7 @@ app.post('/api/rides', async (req, res) => {
     const ride = result.rows[0];
     try {
       io.emit('newRideRequest', { ride });
-    } catch (e) {
+    } catch (_) {
       console.warn('Emit newRideRequest failed', e);
     }
 
@@ -1144,7 +1144,7 @@ app.post('/api/emergency', async (req, res) => {
     // Emit to admins room
     try {
       io.to('admins').emit('emergencyAlert', alertPayload);
-    } catch (e) {
+    } catch (_) {
       console.warn('Failed to emit to admins room', e);
     }
 
@@ -1157,7 +1157,7 @@ app.post('/api/emergency', async (req, res) => {
         if (sockId && io && io.to) {
           try {
             io.to(sockId).emit('emergencyAlert', alertPayload);
-          } catch (e) {
+          } catch (_) {
             console.warn('Direct admin emit failed', e);
           }
         } else {
@@ -1166,12 +1166,12 @@ app.post('/api/emergency', async (req, res) => {
           pendingNotifications.set(adminId, arr);
         }
       }
-    } catch (e) {
+    } catch (_) {
       console.warn('Error delivering/queuing emergency via HTTP', e);
     }
 
     res.json({ success: true, alert: alertPayload });
-  } catch (e) {
+  } catch (_) {
     console.error('POST /api/emergency error', e);
     res.status(500).json({ error: 'Failed to process emergency' });
   }
@@ -1287,7 +1287,7 @@ app.post('/api/rides/:rideId/accept', async (req, res) => {
       if (ride && ride.driver_id) {
         io.to(`user:${ride.driver_id}`).emit('rideAccepted', { ride });
       }
-    } catch (e) {
+    } catch (_) {
       console.warn('Failed to emit rideAccepted to rooms, falling back to broadcast', e);
       io.emit('rideAccepted', { ride });
     }
@@ -1334,12 +1334,12 @@ app.post('/api/rides/:rideId/cancel', async (req, res) => {
     try {
       if (ride.student_id) io.to(`user:${ride.student_id}`).emit('rideCancelled', { rideId });
       if (ride.driver_id) io.to(`user:${ride.driver_id}`).emit('rideCancelled', { rideId });
-    } catch (e) {
+    } catch (_) {
       console.warn('Failed to emit rideCancelled', e);
     }
 
     res.json({ success: true, rideId });
-  } catch (e) {
+  } catch (_) {
     console.error('Cancel ride error:', e);
     res.status(500).json({ error: 'Failed to cancel ride' });
   }
@@ -1381,19 +1381,19 @@ app.post('/api/rides/:rideId/end', async (req, res) => {
           [parsedFare, driverId]
         );
       }
-    } catch (e) {
+    } catch (_) {
       console.warn('Failed to update driver earnings', e);
     }
 
     try {
       if (ride.student_id) io.to(`user:${ride.student_id}`).emit('rideEnded', { rideId });
       if (ride.driver_id) io.to(`user:${ride.driver_id}`).emit('rideEnded', { rideId });
-    } catch (e) {
+    } catch (_) {
       console.warn('Failed to emit rideEnded', e);
     }
 
     res.json({ success: true, rideId });
-  } catch (e) {
+  } catch (_) {
     console.error('End ride error:', e);
     res.status(500).json({ error: 'Failed to end ride' });
   }
@@ -1439,7 +1439,7 @@ app.get('/api/rides/:rideId/reviews', async (req, res) => {
       rideId,
     ]);
     res.json({ reviews: r.rows });
-  } catch (e) {
+  } catch (_) {
     console.error('GET /api/rides/:rideId/reviews error', e);
     res.status(500).json({ error: 'Failed to get reviews' });
   }
@@ -1473,7 +1473,7 @@ app.post('/api/rides/:rideId/review', async (req, res) => {
         .query('UPDATE driver_applications SET rating = $1 WHERE user_id = $2', [avg, targetId])
         .catch(() => {});
       // also store total reviews maybe in users table or driver_applications; skip if missing
-    } catch (e) {
+    } catch (_) {
       console.warn('Could not recalc/update rating:', e.message || e);
     }
 
@@ -1484,12 +1484,12 @@ app.post('/api/rides/:rideId/review', async (req, res) => {
       // also direct emit if socket mapping exists
       const sock = activeSockets.get(targetId);
       if (sock) io.to(sock).emit('reviewSubmitted', { review });
-    } catch (e) {
+    } catch (_) {
       console.warn('Failed to emit reviewSubmitted', e);
     }
 
     res.json({ success: true, review });
-  } catch (e) {
+  } catch (_) {
     console.error('POST /api/rides/:rideId/review error', e);
     res.status(500).json({ error: 'Failed to submit review' });
   }
@@ -1514,9 +1514,9 @@ io.on('connection', (socket) => {
             try {
               socket.join('admins');
               console.log(`Socket ${socket.id} joined admins room`);
-            } catch (e) {}
+            } catch (_) {}
           }
-        } catch (err) {
+        } catch (_) {
           console.warn('Socket auth: invalid token provided');
           resolvedUserId = null;
         }
@@ -1528,7 +1528,7 @@ io.on('connection', (socket) => {
       } else {
         console.warn('Socket authenticate failed - no valid userId');
       }
-    } catch (err) {
+    } catch (_) {
       console.warn('Socket authenticate error', err);
     }
   });
@@ -1548,7 +1548,7 @@ io.on('connection', (socket) => {
       // 1) Emit to connected admins who joined the 'admins' room
       try {
         io.to('admins').emit('emergencyAlert', alertPayload);
-      } catch (e) {
+      } catch (_) {
         console.warn('Failed to emit to admins room', e);
       }
 
@@ -1561,7 +1561,7 @@ io.on('connection', (socket) => {
           if (sockId && io && io.to) {
             try {
               io.to(sockId).emit('emergencyAlert', alertPayload);
-            } catch (e) {
+            } catch (_) {
               console.warn('Direct admin emit failed', e);
             }
           } else {
@@ -1572,12 +1572,12 @@ io.on('connection', (socket) => {
             console.log(`Queued emergency alert for offline admin ${adminId}`);
           }
         }
-      } catch (e) {
+      } catch (_) {
         console.warn('Failed querying admins for emergency delivery', e);
       }
 
       console.log('Emergency alert processed:', alertPayload);
-    } catch (e) {
+    } catch (_) {
       console.warn('emergencyAlert handler error', e);
     }
   });
@@ -1598,14 +1598,14 @@ io.on('connection', (socket) => {
           pending.forEach((p) => {
             try {
               io.to(room).emit('driverStatusUpdated', p);
-            } catch (e) {
+            } catch (_) {
               console.warn('Replay emit failed', e);
             }
           });
           pendingNotifications.delete(userId);
           console.log(`Replayed ${pending.length} pending notifications for user ${userId}`);
         }
-      } catch (e) {
+      } catch (_) {
         console.warn('Error replaying pending notifications', e);
       }
       // Send currently active driver offers (so passengers joining after offers still see them)
@@ -1614,10 +1614,10 @@ io.on('connection', (socket) => {
         if (offers.length > 0) {
           io.to(room).emit('activeDriverOffers', { offers });
         }
-      } catch (e) {
+      } catch (_) {
         console.warn('Error sending active offers to room', e);
       }
-    } catch (err) {
+    } catch (_) {
       console.warn('joinUserRoom error', err);
     }
   });
@@ -1629,7 +1629,7 @@ io.on('connection', (socket) => {
       const room = `ride:${rideId}`;
       socket.join(room);
       console.log(`Socket ${socket.id} joined ride room ${room}`);
-    } catch (e) {
+    } catch (_) {
       console.warn('joinRideRoom error', e);
     }
   });
@@ -1663,7 +1663,7 @@ io.on('connection', (socket) => {
             console.warn(`Socket ${socket.id} provided JWT but not admin`);
             return;
           }
-        } catch (e) {
+        } catch (_) {
           console.warn('adminJoin JWT verify failed', e.message || e);
           return;
         }
@@ -1672,7 +1672,7 @@ io.on('connection', (socket) => {
       // Fallback: no ADMIN_KEY and no JWT provided — allow join (development mode)
       socket.join('admins');
       console.log(`Socket ${socket.id} joined admins room (dev fallback)`);
-    } catch (e) {
+    } catch (_) {
       console.warn('adminJoin error', e);
     }
   });
@@ -1701,7 +1701,7 @@ io.on('connection', (socket) => {
         activeOffers.delete(driverId);
         io.emit('driverOfferRemoved', { driverId });
       }
-    } catch (e) {
+    } catch (_) {
       console.warn('Error removing active offer on offline', e);
     }
 
@@ -1730,7 +1730,7 @@ io.on('connection', (socket) => {
       // Broadcast to all connected clients (could be optimized by proximity)
       io.emit('driverOffering', payload);
       console.log(`Driver ${data.driverId} published an offer`, payload);
-    } catch (e) {
+    } catch (_) {
       console.warn('offerRide handler error', e);
     }
   });
@@ -1744,7 +1744,7 @@ io.on('connection', (socket) => {
         io.emit('driverOfferRemoved', { driverId });
         console.log(`Driver ${driverId} cancelled their offer`);
       }
-    } catch (e) {
+    } catch (_) {
       console.warn('cancelOffer error', e);
     }
   });
@@ -1774,7 +1774,7 @@ io.on('connection', (socket) => {
     try {
       const room = `ride:${rideId}`;
       io.to(room).emit('chatMessage', { rideId, senderId, message, timestamp: new Date() });
-    } catch (e) {
+    } catch (_) {
       console.warn('Failed to emit chatMessage to ride room, falling back to broadcast', e);
       io.emit('chatMessage', { rideId, senderId, message, timestamp: new Date() });
     }
@@ -1795,7 +1795,7 @@ io.on('connection', (socket) => {
             activeOffers.delete(userId);
             io.emit('driverOfferRemoved', { driverId: userId });
           }
-        } catch (e) {
+        } catch (_) {
           console.warn('Error removing active offer on disconnect', e);
         }
         break;

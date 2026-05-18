@@ -26,7 +26,7 @@ function generateToken(userId, email, accountType, expiresIn = '7d') {
 function verifyToken(token) {
   try {
     return jwt.verify(token, JWT_SECRET);
-  } catch (err) {
+  } catch (_) {
     return null;
   }
 }

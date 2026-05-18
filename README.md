@@ -56,6 +56,7 @@ A Modern ride-sharing platform **exclusively for Imam Muhammad Ibn Saud Islamic 
 Amam is a student ride-sharing platform ensuring safety through mandatory university verification. Both riders and drivers must be verified students, creating a trusted campus community for affordable, convenient transportation.
 
 **Key Values**:
+
 - 🔒 University-verified students only
 - 🚗 Student drivers with background checks
 - 💬 Real-time communication
@@ -216,6 +217,7 @@ npm run seed-admin
 ```
 
 This creates the database tables and adds a default admin account:
+
 - Username: `admin`
 - Email: `admin@amam.com`
 - Password: `Admin@123456` (⚠️ Change in production!)
@@ -331,6 +333,7 @@ Visit `http://localhost:3000` in your browser.
 ### Socket.io Events
 
 **Client → Server**:
+
 - `requestRide` - Student requests a ride
 - `cancelRide` - Cancel pending request
 - `chatMessage` - Send message to driver
@@ -338,6 +341,7 @@ Visit `http://localhost:3000` in your browser.
 - `acceptRide` - Driver accepts ride
 
 **Server → Client**:
+
 - `driverMatched` - Driver found and matched
 - `driverLocationUpdate` - Driver's GPS coordinates
 - `chatMessage` - Message from driver
@@ -432,6 +436,7 @@ ADMIN_KEY=random_admin_override_key
 ### Deployment Platforms
 
 Tested on:
+
 - Heroku
 - AWS EC2
 - DigitalOcean

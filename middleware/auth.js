@@ -36,7 +36,7 @@ function requireAdmin(req, res, next) {
         return next();
       }
       return res.status(403).json({ error: 'Not an admin' });
-    } catch (e) {
+    } catch (_) {
       return res.status(401).json({ error: 'Invalid admin token' });
     }
   } catch (e) {
