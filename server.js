@@ -4,7 +4,11 @@ const http = require('http');
 const { Server } = require('socket.io');
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const { createClient } = require('@supabase/supabase-js');
+const { initializeTables } = require('./db/init');
+const { requireAdmin } = require('./middleware/auth');
+const { generateToken } = require('./utils/helpers');
 
 const app = express();
 const server = http.createServer(app);
@@ -28,11 +32,13 @@ const pool = new Pool({
 });
 
 // Test database connection
-pool.query('SELECT NOW()', (err, res) => {
+pool.query('SELECT NOW()', async (err, res) => {
   if (err) {
     console.error('❌ Database connection error:', err);
   } else {
     console.log('✅ Database connected at:', res.rows[0].now);
+    // Initialize all database tables
+    await initializeTables(pool);
   }
 });
 
@@ -42,39 +48,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(express.static(__dirname));
 
-// Admin authorization middleware
-function requireAdmin(req, res, next) {
-  try {
-    const adminKey = process.env.ADMIN_KEY;
-    // 1) If ADMIN_KEY is set, allow requests that present it via header `x-admin-key` or query param
-    if (adminKey) {
-      const provided =
-        req.headers['x-admin-key'] || req.query.adminKey || (req.body && req.body.adminKey);
-      if (provided && provided === adminKey) return next();
-      return res.status(401).json({ error: 'Missing or invalid admin key' });
-    }
-
-    // 2) Otherwise, accept a Bearer JWT and verify accountType or role === 'admin'
-    const auth = req.headers.authorization || req.headers.Authorization;
-    if (!auth || !auth.startsWith('Bearer '))
-      return res.status(401).json({ error: 'Missing admin token' });
-    const token = auth.split(' ')[1];
-    try {
-      const payload = jwt.verify(token, JWT_SECRET);
-      if (payload && (payload.accountType === 'admin' || payload.role === 'admin')) {
-        // attach adminId for downstream handlers
-        req.adminId = payload.userId || payload.userID || payload.id;
-        return next();
-      }
-      return res.status(403).json({ error: 'Not an admin' });
-    } catch (e) {
-      return res.status(401).json({ error: 'Invalid admin token' });
-    }
-  } catch (e) {
-    console.warn('requireAdmin error', e);
-    return res.status(500).json({ error: 'Server error' });
-  }
-}
+// requireAdmin middleware is imported from ./middleware/auth
 
 // Debug: list registered routes (temporary)
 app.get('/__routes', (req, res) => {
@@ -136,7 +110,7 @@ app.post('/api/register', async (req, res) => {
     // Supabase sends verification emails on signUp by default (if configured).
     console.log('✅ Supabase signUp succeeded for:', email);
 
-    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+    const token = generateToken(user.id, user.email, user.account_type);
 
     res.json({
       success: true,
@@ -200,12 +174,10 @@ app.post('/api/send-verification-email', async (req, res) => {
 
     // Resend verification email — requires service role key server-side
     if (!supabaseAdmin) {
-      return res
-        .status(403)
-        .json({
-          error:
-            'Resend not supported server-side without SUPABASE_SERVICE_ROLE_KEY. Use frontend to request resend.',
-        });
+      return res.status(403).json({
+        error:
+          'Resend not supported server-side without SUPABASE_SERVICE_ROLE_KEY. Use frontend to request resend.',
+      });
     }
     const { error: resendError } = await supabaseAdmin.auth.resend({
       type: 'signup',
@@ -315,11 +287,7 @@ app.post('/api/login', async (req, res) => {
 
     const user = result.rows[0];
 
-    const token = jwt.sign(
-      { userId: user.id, email: user.email, accountType: user.account_type },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    const token = generateToken(user.id, user.email, user.account_type);
 
     res.json({
       success: true,
@@ -342,16 +310,114 @@ app.post('/api/login', async (req, res) => {
         isActiveDriver: user.is_active_driver,
         driverStats: user.is_active_driver
           ? {
-            totalRides: user.total_rides,
-            rating: parseFloat(user.rating),
-            totalEarnings: parseFloat(user.total_earnings),
-          }
+              totalRides: user.total_rides,
+              rating: parseFloat(user.rating),
+              totalEarnings: parseFloat(user.total_earnings),
+            }
           : null,
       },
     });
   } catch (error) {
     console.error('Login error:', error);
 
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+// ==================== ADMIN AUTH ENDPOINTS ====================
+
+/**
+ * Admin registration endpoint
+ * Creates a new admin account with hashed password
+ */
+app.post('/api/admin/register', async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: 'Missing username, email, or password' });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const result = await pool.query(
+      'INSERT INTO admins (username, email, password_hash) VALUES ($1, $2, $3) RETURNING id, username, email, role, created_at',
+      [username, email, passwordHash]
+    );
+
+    const admin = result.rows[0];
+    const token = generateToken(admin.id, admin.email, admin.role);
+
+    res.json({
+      success: true,
+      message: 'Admin account created successfully',
+      token,
+      admin: {
+        id: admin.id,
+        username: admin.username,
+        email: admin.email,
+        role: admin.role,
+      },
+    });
+  } catch (error) {
+    console.error('Admin registration error:', error);
+    if (error.code === '23505') {
+      res.status(400).json({ error: 'Username or email already exists' });
+    } else {
+      res.status(500).json({ error: 'Registration failed: ' + error.message });
+    }
+  }
+});
+
+/**
+ * Admin login endpoint
+ * Authenticates admin with username and password, returns JWT token
+ */
+app.post('/api/admin/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Missing username or password' });
+    }
+
+    const result = await pool.query(
+      'SELECT * FROM admins WHERE username = $1 AND is_active = TRUE',
+      [username]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const admin = result.rows[0];
+
+    // Verify password
+    const validPassword = await bcrypt.compare(password, admin.password_hash);
+
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const token = generateToken(admin.id, admin.email, admin.role);
+
+    res.json({
+      success: true,
+      token,
+      admin: {
+        id: admin.id,
+        username: admin.username,
+        email: admin.email,
+        role: admin.role,
+      },
+    });
+  } catch (error) {
+    console.error('Admin login error:', error);
     res.status(500).json({ error: 'Login failed' });
   }
 });
@@ -483,17 +549,6 @@ app.post('/api/announcements', requireAdmin, async (req, res) => {
     const { title, message, type, eventDate, adminId } = req.body || {};
     if (!title || !message) return res.status(400).json({ error: 'Missing title or message' });
 
-    // Ensure announcements table exists
-    await pool.query(`CREATE TABLE IF NOT EXISTS announcements (
-            id SERIAL PRIMARY KEY,
-            title TEXT,
-            message TEXT,
-            type VARCHAR(50) DEFAULT 'system',
-            event_date TIMESTAMP NULL,
-            created_by TEXT,
-            created_at TIMESTAMP DEFAULT NOW()
-        )`);
-
     const insert = await pool.query(
       'INSERT INTO announcements (title, message, type, event_date, created_by) VALUES ($1,$2,$3,$4,$5) RETURNING *',
       [title, message, type || 'system', eventDate || null, adminId || null]
@@ -517,16 +572,6 @@ app.post('/api/announcements', requireAdmin, async (req, res) => {
 
 app.get('/api/announcements', async (req, res) => {
   try {
-    await pool.query(`CREATE TABLE IF NOT EXISTS announcements (
-            id SERIAL PRIMARY KEY,
-            title TEXT,
-            message TEXT,
-            type VARCHAR(50) DEFAULT 'system',
-            event_date TIMESTAMP NULL,
-            created_by TEXT,
-            created_at TIMESTAMP DEFAULT NOW()
-        )`);
-
     const r = await pool.query('SELECT * FROM announcements ORDER BY created_at DESC LIMIT 100');
     res.json({ announcements: r.rows });
   } catch (e) {
@@ -542,16 +587,6 @@ app.put('/api/announcements/:id', requireAdmin, async (req, res) => {
     const { title, message, type, eventDate } = req.body || {};
     if (!title && !message && !type && !eventDate)
       return res.status(400).json({ error: 'No fields to update' });
-
-    await pool.query(`CREATE TABLE IF NOT EXISTS announcements (
-            id SERIAL PRIMARY KEY,
-            title TEXT,
-            message TEXT,
-            type VARCHAR(50) DEFAULT 'system',
-            event_date TIMESTAMP NULL,
-            created_by TEXT,
-            created_at TIMESTAMP DEFAULT NOW()
-        )`);
 
     const fields = [];
     const params = [];
@@ -596,16 +631,6 @@ app.put('/api/announcements/:id', requireAdmin, async (req, res) => {
 app.delete('/api/announcements/:id', requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    await pool.query(`CREATE TABLE IF NOT EXISTS announcements (
-            id SERIAL PRIMARY KEY,
-            title TEXT,
-            message TEXT,
-            type VARCHAR(50) DEFAULT 'system',
-            event_date TIMESTAMP NULL,
-            created_by TEXT,
-            created_at TIMESTAMP DEFAULT NOW()
-        )`);
-
     const del = await pool.query('DELETE FROM announcements WHERE id = $1 RETURNING id', [id]);
     if (del.rows.length === 0) return res.status(404).json({ error: 'Announcement not found' });
 
@@ -643,19 +668,6 @@ app.post('/api/tickets', async (req, res) => {
     if (!userId || !type || !subject || !body)
       return res.status(400).json({ error: 'Missing fields' });
 
-    // ensure tickets table exists (dev-friendly)
-    await pool.query(`CREATE TABLE IF NOT EXISTS tickets (
-            id SERIAL PRIMARY KEY,
-            user_id TEXT,
-            type VARCHAR(100),
-            subject TEXT,
-            body TEXT,
-            status VARCHAR(50) DEFAULT 'open',
-            admin_reply TEXT,
-            created_at TIMESTAMP DEFAULT NOW(),
-            updated_at TIMESTAMP
-        )`);
-
     const insert = await pool.query(
       'INSERT INTO tickets (user_id, type, subject, body) VALUES ($1,$2,$3,$4) RETURNING *',
       [userId, type, subject, body]
@@ -672,7 +684,7 @@ app.post('/api/tickets', async (req, res) => {
 
     // queue per-admin if offline
     try {
-      const r = await pool.query('SELECT id FROM users WHERE account_type = \'admin\'');
+      const r = await pool.query("SELECT id FROM users WHERE account_type = 'admin'");
       for (const row of r.rows) {
         const adminId = row.id;
         const sockId = activeSockets.get(adminId);
@@ -703,18 +715,6 @@ app.post('/api/tickets', async (req, res) => {
 app.get('/api/users/:userId/tickets', async (req, res) => {
   try {
     const { userId } = req.params;
-    await pool.query(`CREATE TABLE IF NOT EXISTS tickets (
-            id SERIAL PRIMARY KEY,
-            user_id TEXT,
-            type VARCHAR(100),
-            subject TEXT,
-            body TEXT,
-            status VARCHAR(50) DEFAULT 'open',
-            admin_reply TEXT,
-            created_at TIMESTAMP DEFAULT NOW(),
-            updated_at TIMESTAMP
-        )`);
-
     const r = await pool.query(
       'SELECT * FROM tickets WHERE user_id = $1 ORDER BY created_at DESC',
       [userId]
@@ -749,18 +749,6 @@ app.post('/api/admin/tickets/:ticketId/review', requireAdmin, async (req, res) =
     const { ticketId } = req.params;
     const { adminId, status, adminReply } = req.body || {};
     if (!adminId || !status) return res.status(400).json({ error: 'Missing adminId or status' });
-
-    await pool.query(`CREATE TABLE IF NOT EXISTS tickets (
-            id SERIAL PRIMARY KEY,
-            user_id TEXT,
-            type VARCHAR(100),
-            subject TEXT,
-            body TEXT,
-            status VARCHAR(50) DEFAULT 'open',
-            admin_reply TEXT,
-            created_at TIMESTAMP DEFAULT NOW(),
-            updated_at TIMESTAMP
-        )`);
 
     const upd = await pool.query(
       'UPDATE tickets SET status = $1, admin_reply = $2, updated_at = NOW() WHERE id = $3 RETURNING *',
@@ -933,10 +921,10 @@ app.get('/api/users/me', async (req, res) => {
       isActiveDriver: user.is_active_driver,
       driverStats: user.is_active_driver
         ? {
-          totalRides: user.total_rides,
-          rating: parseFloat(user.rating || 0),
-          totalEarnings: parseFloat(user.total_earnings || 0),
-        }
+            totalRides: user.total_rides,
+            rating: parseFloat(user.rating || 0),
+            totalEarnings: parseFloat(user.total_earnings || 0),
+          }
         : null,
     });
   } catch (error) {
@@ -1052,12 +1040,10 @@ app.post('/api/users/update', async (req, res) => {
   } catch (error) {
     console.error('Update profile error:', error);
     // Provide a clearer error message to the client for easier debugging (avoid leaking secrets)
-    res
-      .status(500)
-      .json({
-        error:
-          'Failed to update profile: ' + (error && error.message ? error.message : String(error)),
-      });
+    res.status(500).json({
+      error:
+        'Failed to update profile: ' + (error && error.message ? error.message : String(error)),
+    });
   }
 });
 
@@ -1137,12 +1123,10 @@ app.post('/api/rides', async (req, res) => {
     res.json({ success: true, ride });
   } catch (error) {
     console.error('Create ride error:', error, 'payload:', { body: req.body });
-    res
-      .status(500)
-      .json({
-        error: 'Failed to create ride',
-        details: error && error.message ? error.message : String(error),
-      });
+    res.status(500).json({
+      error: 'Failed to create ride',
+      details: error && error.message ? error.message : String(error),
+    });
   }
 });
 
@@ -1166,7 +1150,7 @@ app.post('/api/emergency', async (req, res) => {
 
     // Queue/deliver to admins by ID
     try {
-      const r = await pool.query('SELECT id FROM users WHERE account_type = \'admin\'');
+      const r = await pool.query("SELECT id FROM users WHERE account_type = 'admin'");
       const admins = r.rows.map((row) => row.id);
       for (const adminId of admins) {
         const sockId = activeSockets.get(adminId);
@@ -1259,7 +1243,7 @@ app.post('/api/rides/:rideId/accept', async (req, res) => {
     const { driverId } = req.body;
     // Ensure driver doesn't have another active or matched ride
     const drvCheck = await pool.query(
-      'SELECT id FROM rides WHERE driver_id = $1 AND status IN (\'matched\',\'active\') LIMIT 1',
+      "SELECT id FROM rides WHERE driver_id = $1 AND status IN ('matched','active') LIMIT 1",
       [driverId]
     );
     if (drvCheck.rows.length > 0) {
@@ -1450,17 +1434,7 @@ app.post('/api/rides/:rideId/complete', async (req, res) => {
 app.get('/api/rides/:rideId/reviews', async (req, res) => {
   try {
     const { rideId } = req.params;
-    // ensure reviews table exists
-    await pool.query(`CREATE TABLE IF NOT EXISTS reviews (
-            id SERIAL PRIMARY KEY,
-            ride_id INTEGER,
-            reviewer_id TEXT,
-            target_id TEXT,
-            rating INTEGER,
-            comment TEXT,
-            created_at TIMESTAMP DEFAULT NOW()
-        )`);
-
+    // Get reviews for this ride
     const r = await pool.query('SELECT * FROM reviews WHERE ride_id = $1 ORDER BY created_at ASC', [
       rideId,
     ]);
@@ -1478,17 +1452,6 @@ app.post('/api/rides/:rideId/review', async (req, res) => {
     const { reviewerId, targetId, rating, comment } = req.body || {};
     if (!reviewerId || !targetId || !rating)
       return res.status(400).json({ error: 'Missing fields' });
-
-    // ensure reviews table exists
-    await pool.query(`CREATE TABLE IF NOT EXISTS reviews (
-            id SERIAL PRIMARY KEY,
-            ride_id INTEGER,
-            reviewer_id TEXT,
-            target_id TEXT,
-            rating INTEGER,
-            comment TEXT,
-            created_at TIMESTAMP DEFAULT NOW()
-        )`);
 
     const insert = await pool.query(
       'INSERT INTO reviews (ride_id, reviewer_id, target_id, rating, comment) VALUES ($1,$2,$3,$4,$5) RETURNING *',
@@ -1591,7 +1554,7 @@ io.on('connection', (socket) => {
 
       // 2) Also query admin user IDs and deliver individually (store pending for offline admins)
       try {
-        const r = await pool.query('SELECT id FROM users WHERE account_type = \'admin\'');
+        const r = await pool.query("SELECT id FROM users WHERE account_type = 'admin'");
         const admins = r.rows.map((row) => row.id);
         for (const adminId of admins) {
           const sockId = activeSockets.get(adminId);

@@ -25,3 +25,6 @@ npm-debug.log*
 # Build outputs
 dist/
 build/
+
+# Sensitive files with hardcoded credentials
+public/admin-login.html

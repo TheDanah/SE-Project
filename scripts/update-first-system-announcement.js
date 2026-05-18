@@ -10,14 +10,14 @@ require('dotenv').config();
   try {
     // Find the oldest system announcement
     const r = await pool.query(
-      'SELECT * FROM announcements WHERE type = \'system\' ORDER BY created_at ASC LIMIT 1'
+      "SELECT * FROM announcements WHERE type = 'system' ORDER BY created_at ASC LIMIT 1"
     );
     if (r.rows.length === 0) {
       console.log('No system announcement found — inserting a new one');
       const ins = await pool.query(
         'INSERT INTO announcements (title, message, type, created_by) VALUES ($1,$2,$3,$4) RETURNING *',
         [
-          'Welcome to Amam — You\'re registered!',
+          "Welcome to Amam — You're registered!",
           'Congratulations — your account is now active. Start requesting rides and enjoy Amam!',
           'system',
           'system',
@@ -30,7 +30,7 @@ require('dotenv').config();
     const ann = r.rows[0];
     console.log('Found system announcement id=', ann.id, 'title=', ann.title);
 
-    const newTitle = 'Welcome to Amam — You\'re registered!';
+    const newTitle = "Welcome to Amam — You're registered!";
     const newMessage =
       'Congratulations — your account is now active. Start requesting rides and enjoy Amam!';
 

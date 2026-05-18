@@ -265,39 +265,34 @@
     </div>
 
     <script>
-      // Default admin credentials
-      const DEFAULT_ADMIN = {
-        username: 'admin',
-        password: 'Admin@123456',
-      };
-
-      function handleLogin(event) {
+      /**
+       * Handle admin login with backend authentication
+       */
+      async function handleLogin(event) {
         event.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const errorMessage = document.getElementById('errorMessage');
 
-        // Get stored admin credentials from localStorage
-        let admins = JSON.parse(localStorage.getItem('adminCredentials') || '[]');
+        try {
+          // Call backend login endpoint
+          const response = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+          });
 
-        // Check if this is the first login - add default admin
-        if (admins.length === 0) {
-          admins.push(DEFAULT_ADMIN);
-          localStorage.setItem('adminCredentials', JSON.stringify(admins));
-        }
+          const data = await response.json();
 
-        // Verify credentials
-        const admin = admins.find((a) => a.username === username && a.password === password);
+          if (!response.ok) {
+            errorMessage.textContent = '❌ ' + (data.error || 'Login failed');
+            errorMessage.style.display = 'block';
+            return;
+          }
 
-        if (admin) {
-          // Store admin session
-          sessionStorage.setItem(
-            'adminSession',
-            JSON.stringify({
-              username: username,
-              loginTime: new Date().toISOString(),
-            })
-          );
+          // Store JWT token
+          localStorage.setItem('adminToken', data.token);
+          localStorage.setItem('adminUser', JSON.stringify(data.admin));
 
           if (document.getElementById('remember').checked) {
             localStorage.setItem('rememberedAdmin', username);
@@ -305,8 +300,9 @@
 
           // Redirect to admin dashboard
           window.location.href = 'admin-dashboard.html';
-        } else {
-          errorMessage.textContent = '❌ Invalid username or password. Please try again.';
+        } catch (error) {
+          console.error('Login error:', error);
+          errorMessage.textContent = '❌ Network error. Please try again.';
           errorMessage.style.display = 'block';
         }
       }

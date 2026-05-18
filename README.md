@@ -1,6 +1,6 @@
 # Amam - Student Ride Sharing App
 
-A Modern ride-sharing App **exclusively for imam university**.
+A Modern ride-sharing platform **exclusively for Imam Muhammad Ibn Saud Islamic University**.
 
 ![Amam Logo](https://img.shields.io/badge/Amam-Student%20Ride%20Sharing-blue?style=for-the-badge)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
@@ -8,286 +8,295 @@ A Modern ride-sharing App **exclusively for imam university**.
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)
 ![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=flat&logo=socket.io&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=flat&logo=postgresql&logoColor=white)
 
-//## 📢 Latest Update: Multi-Tab Dashboard 🎉
+## 📢 Latest Update: Multi-Tab Dashboard & Admin Authentication
 
-**November 5, 2025** - Complete dashboard redesign with 4-tab navigation system:
+**May 2026** - Complete platform with verified students, real-time tracking, and admin management:
 
-✨ **New Features**:
+✨ **Key Features**:
 
 - 🏠 **Home Tab**: Request rides, interactive map, real-time chat
 - 📢 **Announcements Tab**: System notifications & university events
 - 🚗 **Driver Application**: Students can apply to become drivers
 - 👤 **Profile Tab**: User settings & statistics
+- 🔐 **Admin Dashboard**: Verify students, manage drivers, platform oversight
 
 ✨ **Smart Role-Based Access**:
 
-- **Students**: See all 4 tabs (full access)
-- **Faculty**: See 3 tabs (driver app hidden)
-- **Drivers**: Redirected to driver-dashboard.html
+- **Students**: Full access to ride requests, driver application, profile
+- **Faculty**: Limited access (announcements, profile only)
+- **Drivers**: Dedicated driver dashboard
+- **Admins**: Complete platform management and verification
 
 ✨ **Responsive Design**: Works on desktop, tablet, and mobile
 
-📖 **Full Documentation**: 8 guides included (see below)
-
-**→ [View Dashboard Documentation](#dashboard-documentation)**
+---
 
 ## Table of Contents
 
 - [Overview](#overview)
-- [Key Features](#key-features)
-- [Dashboard Documentation](#dashboard-documentation)
+- [Quick Start](#quick-start)
+- [Features](#features)
 - [Project Structure](#project-structure)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Pages](#pages)
-- [Real-Time Features](#real-time-features)
 - [Technologies](#technologies)
+- [Real-Time Features](#real-time-features)
 - [Security](#security)
+- [Documentation](#documentation)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
 
 ## Overview
 
-Amam is a student ride-sharing platform that ensures safety through mandatory university verification. Both riders and drivers must be verified students, creating a trusted campus community for affordable, convenient transportation.
+Amam is a student ride-sharing platform ensuring safety through mandatory university verification. Both riders and drivers must be verified students, creating a trusted campus community for affordable, convenient transportation.
 
-## Dashboard Documentation
+**Key Values**:
+- 🔒 University-verified students only
+- 🚗 Student drivers with background checks
+- 💬 Real-time communication
+- 🗺️ Live GPS tracking
+- 📱 Responsive mobile design
 
-**[Dashboard Architecture Guide](./DASHBOARD_ARCHITECTURE.md)** //- Technical implementation details
-//- Multi-tab interface design (4 tabs for students, 3 for faculty)
-//- Component structure and layout system
+---
 
-- API integration patterns
-- Real-time Socket.IO events
+## Quick Start
 
-**[User Guide](./DASHBOARD_GUIDE.md)** - Complete feature walkthrough
+### Prerequisites
 
-- How to request a ride
-- Announcements and university events
-- Driver application process
-- Profile and settings management
+- Node.js (v14 or higher)
+- npm (Node Package Manager)
+- PostgreSQL (for database)
 
-**[Authentication Flow](./LOGIN_REDIRECT_GUIDE.md)** - Role-based access
+### Installation
 
-- Login verification process
-- Role detection and tab visibility
-- Email verification requirements
-- Redirect logic for students, faculty, and drivers
+```bash
+# Clone the repository
+git clone <repository-url>
+cd SE-Project
 
-**[QA Checklist](./IMPLEMENTATION_CHECKLIST.md)** - Testing procedures
--// 50+ manual test cases
+# Install dependencies
+npm install
 
-- //Mobile responsiveness tests
-- API endpoint verification
-- Real-time feature testing
+# Set up environment variables
+cp .env.example .env
 
-**[📚 More Resources](./DOCUMENTATION_INDEX.md)** - Complete documentation index
+# Initialize database
+npm run seed-admin
 
-- Quick reference guide
-- Usage examples with real scenarios
-- Troubleshooting guide
-- Support contact information
+# Start the server
+npm start
+```
+
+The app will be available at `http://localhost:3000`
+
+---
 
 ## Features
 
 ### Student Verification System
 
-- **University Email Required** - All students must register with @sm.imamu.edu.sa email addresses
-- **Driver Background Checks** - Additional verification for student drivers (license, vehicle, insurance)
+- **University Email Required** - All students must register with @sm.imamu.edu.sa emails
+- **Email Verification** - Confirmation links sent to verify accounts
+- **Driver Background Checks** - Additional verification for student drivers
 - **Trusted Community** - Only verified students can access the platform
 
 ### Real-Time Ride Tracking
 
-- **Live GPS Tracking** - See your driver's location in real-time using Leaflet.js maps
-- **Route Visualization** - Visual route from driver to student with ETA updates
-- **Location Updates** - Automatic location refresh via Socket.io
-- **Map Controls** - Center map, toggle traffic, zoom controls
+- **Live GPS Tracking** - See driver location in real-time using Leaflet.js maps
+- **Route Visualization** - Visual route with ETA updates
+- **Auto-Location Updates** - Socket.io powered position tracking
+- **Map Controls** - Center, zoom, and traffic toggle options
 
 ### Instant Messaging
 
-- **Real-Time Chat** - Communicate with your driver using Socket.io
-- **Typing Indicators** - See when your driver is typing
-- **Message History** - Full conversation history during ride
-- **Instant Notifications** - Get notified of new messages immediately
+- **Real-Time Chat** - Communicate with drivers via Socket.io
+- **Typing Indicators** - See when driver is typing
+- **Message History** - Full conversation logs during ride
+- **Instant Notifications** - Push notifications for new messages
 
 ### Smart Ride Matching
 
-- **Automatic Driver Matching** - Find the nearest available student driver
-- **Campus Routes** - Preset destinations (university buildings, dorms, metro stations)
-- **Passenger Selection** - Choose number of passengers (1-4)
+- **Automatic Driver Matching** - Find nearest available student driver
+- **Campus Routes** - Preset destinations (buildings, dorms, metro)
+- **Passenger Selection** - Choose 1-4 passengers
 - **Fair Pricing** - Student-friendly rates
+
+### Admin Management
+
+- **Student Verification** - Review and approve student accounts
+- **Driver Verification** - Validate driver licenses and vehicle info
+- **Announcement Management** - Create and manage system notifications
+- **Platform Monitoring** - Track active users and rides
 
 ### Role-Based Access
 
-- **Student (Rider)** - Request rides, track drivers, chat
+- **Student (Rider)** - Request rides, track drivers, chat, apply as driver
 - **Student Driver** - Accept rides, update location, earn money
-- **Admin** - Verify students, manage platform, ensure safety
+- **Faculty** - Limited access (announcements, profile only)
+- **Admin** - Full platform management and oversight
+
+---
 
 ## Project Structure
 
 ```
-project/
-├── public/
-│   ├── index.html              # Landing page
-│   ├── login.html              # Login page (role-based)
-│   ├── signup.html             # Student registration
-│   ├── student-dashboard.html  # Student ride request dashboard
-│   ├── driver-dashboard.html   # Driver dashboard ✅
-│   └── admin-dashboard.html    # Admin verification panel ✅
-├── server.js                   # Node.js + Socket.io server
-├── package.json                # Dependencies
-├── README.md                   # Documentation
-├── QUICKSTART.md               # Quick start guide
-└── DASHBOARDS.md               # Complete dashboard guide
+SE-Project/
+├── public/                         # Frontend static files
+│   ├── index.html                 # Landing page
+│   ├── login.html                 # Role-based login
+│   ├── signup.html                # Student registration
+│   ├── student-dashboard.html     # Student ride request interface
+│   ├── driver-dashboard.html      # Driver acceptance interface
+│   ├── admin-dashboard.html       # Admin verification panel
+│   ├── admin-login.html           # Admin authentication
+│   ├── role-selection.html        # Role picker
+│   ├── verify-email.html          # Email verification
+│   └── assets/                    # Images and icons
+│
+├── db/
+│   ├── schema.js                  # Database table definitions
+│   └── init.js                    # Database initialization
+│
+├── middleware/
+│   └── auth.js                    # Authentication & authorization
+│
+├── utils/
+│   └── helpers.js                 # Shared utility functions
+│
+├── scripts/
+│   ├── seed-admin.js              # Bootstrap default admin
+│   ├── functional_test.js         # API tests
+│   └── update-first-system-announcement.js
+│
+├── server.js                       # Main Express + Socket.io server
+├── database.sql                    # SQL schema backup
+├── package.json                    # Dependencies and scripts
+├── README.md                       # This file
+└── .env.example                    # Environment variables template
 ```
+
+---
 
 ## Installation
 
-### Prerequisites
+### Step 1: Clone Repository
 
-- **Node.js** (v14 or higher)
-- **npm** (Node Package Manager)
+```bash
+git clone <repository-url>
+cd SE-Project
+```
 
-### Steps
+### Step 2: Install Dependencies
 
-1. **Navigate to project directory**
+```bash
+npm install
+```
 
-   ```bash
-   cd c:\Users\moham\Desktop\project
-   ```
+### Step 3: Configure Environment
 
-2. **Install dependencies**
+Create `.env` file:
 
-   ```bash
-   npm install
-   ```
+```env
+PORT=3000
+NODE_ENV=development
+JWT_SECRET=your_jwt_secret_key
+ADMIN_KEY=your_admin_key_optional
+DATABASE_URL=postgresql://user:password@localhost:5432/amam
+```
 
-3. **Start the server**
+### Step 4: Initialize Database
 
-   ```bash
-   npm start
-   ```
+```bash
+npm run seed-admin
+```
 
-   Or for development with auto-reload:
+This creates the database tables and adds a default admin account:
+- Username: `admin`
+- Email: `admin@amam.com`
+- Password: `Admin@123456` (⚠️ Change in production!)
 
-   ```bash
-   npm run dev
-   ```
+### Step 5: Start Server
 
-4. **Open in browser**
-   ```
-   http://localhost:3000
-   ```
+```bash
+npm start
+```
+
+For development with auto-reload:
+
+```bash
+npm run dev
+```
+
+Visit `http://localhost:3000` in your browser.
+
+---
 
 ## Usage
 
 ### For Students (Riders)
 
-1. **Sign Up** - Visit signup.html and register with:
-   - University email (@sm.imamu.edu.sa)
-   - Student ID
-   - Personal information
-2. **Wait for Verification** - Verify your account usin the authentication link
+1. **Sign Up**
+   - Visit signup.html
+   - Register with @sm.imamu.edu.sa email
+   - Verify email from confirmation link
 
-3. **Login** - Use login.html
+2. **Login**
+   - Use credentials at login.html
+   - Role automatically detected
 
-4. **Request Ride**:
+3. **Request Ride**
    - Enter pickup location
    - Select destination (campus/metro)
-   - Choose number of passengers
+   - Choose number of passengers (1-4)
    - Click "Find Driver"
 
-5. **Track & Chat**:
+4. **Track & Chat**
    - View driver location on map
    - Chat in real-time
    - Get ETA updates
 
 ### For Student Drivers
 
-1. **Driver Application** - Complete driver registration with:
-   - Driver's license number
-   - Vehicle information
-   - License plate
+1. **Apply as Driver** (from student dashboard)
+   - Submit driver's license
+   - Provide vehicle info
+   - Enter license plate
 
-2. **Verification** - Admin verifies driver credentials
+2. **Wait for Admin Approval**
+   - Admin verifies documents
+   - Receives approval notification
 
-3. **Login** - Use login.html
-
-4. **Accept Rides** - Dashboard shows nearby ride requests
+3. **Accept Rides**
+   - Login to driver dashboard
+   - Accept nearby ride requests
+   - Update location in real-time
 
 ### For Admins
 
-1. **Login** - Use admin credentials
-2. **Verify Students** - Review student ID documents
-3. **Approve Drivers** - Check driver licenses and vehicle registration
-4. **Monitor Platform** - Ensure safety and compliance
+1. **Login**
+   - Use admin credentials at admin-login.html
+   - Or use ADMIN_KEY header
 
-//## Pages
+2. **Verify Students**
+   - Review student email domains
+   - Approve/reject registrations
 
-//### 1. Landing Page (`index.html`)
-//- Student-focused messaging
-//- Features: verification, tracking, chat, campus routes
-//- Statistics and testimonials
-//- Call-to-action for signup
+3. **Verify Drivers**
+   - Review driver documents
+   - Validate license information
+   - Approve vehicle registration
 
-//### 2. Login Page (`login.html`)
-//- **Role Selection**: Student, Driver, or Admin
-//- **Fields**: Username, University Email, Password
-//- **Validation**: .edu email required for students/drivers
-//- **Redirects**: Role-based dashboard routing
+4. **Manage Announcements**
+   - Create system notifications
+   - Target specific roles
+   - View delivery status
 
-//### 3. Signup Page (`signup.html`)
-//- Account type selection (Student/Driver)
-//- University email validation
-//- Student ID collection
-//- Driver-specific fields (conditional)
-//- Pending admin verification notice
-
-//### 4. Student Dashboard (`student-dashboard.html`)
-//- **Left Panel**: Ride request form
-//- Pickup location
-//- Destination selector
-//- Passenger count
-//- Request/Cancel buttons
-
-//- **Center Panel**: Interactive Map
-//- Student location marker
-//- Driver location marker
-// - Route visualization
-//- Real-time updates
-
-//- **Right Panel**: Live Chat
-// - Message history
-//- Typing indicators
-//- Send messages
-//- Driver info display
-
-## Real-Time Features
-
-### Socket.io Events
-
-#### Client → Server
-
-- `requestRide` - Student requests a ride
-- `cancelRide` - Student cancels request
-- `chatMessage` - Send message to driver
-- `driverAvailable` - Driver goes online
-- `acceptRide` - Driver accepts ride request
-
-#### Server → Client
-
-- `driverMatched` - Driver found and matched
-- `driverLocationUpdate` - Driver's GPS coordinates
-- `chatMessage` - Message from driver
-- `driverTyping` - Driver is typing
-- `rideCompleted` - Ride finished
-- `rideCancelled` - Ride was cancelled
-
-### Map Integration (Leaflet.js)
-
-- OpenStreetMap tiles
-- Custom markers (student, driver)
-- Polyline route visualization
-- Auto-centering and zoom
-- Real-time position updates
+---
 
 ## Technologies
 
@@ -304,247 +313,165 @@ project/
 - **Node.js** - Server runtime
 - **Express.js** - Web framework
 - **Socket.io** - WebSocket communication
-- **HTTP Server** - Serve static files
+- **PostgreSQL** - Database
+- **Supabase** - Auth service
+- **Bcrypt** - Password hashing
+- **JWT** - Token authentication
 
 ### External APIs
 
-- **OpenStreetMap** - Map tiles and routing
+- **OpenStreetMap** - Map tiles
 - **Geolocation API** - User location
+- **Email Service** - Verification emails
+
+---
+
+## Real-Time Features
+
+### Socket.io Events
+
+**Client → Server**:
+- `requestRide` - Student requests a ride
+- `cancelRide` - Cancel pending request
+- `chatMessage` - Send message to driver
+- `driverAvailable` - Driver goes online
+- `acceptRide` - Driver accepts ride
+
+**Server → Client**:
+- `driverMatched` - Driver found and matched
+- `driverLocationUpdate` - Driver's GPS coordinates
+- `chatMessage` - Message from driver
+- `driverTyping` - Driver is typing
+- `rideCompleted` - Ride finished
+- `rideCancelled` - Ride was cancelled
+
+### Map Integration
+
+- OpenStreetMap tiles for global coverage
+- Custom markers (student, driver, destinations)
+- Polyline route visualization
+- Auto-centering and zoom controls
+- Real-time position updates
+
+---
 
 ## Security
 
 ### Authentication
 
-- University email verification (@sm.imamu.edu.sa required)
-- Password hashing (implement bcrypt in production)
-- Session management
-- Role-based access control
+- **Email Verification** - Required for all accounts
+- **JWT Tokens** - Secure session management
+- **Bcrypt Hashing** - Password security (10 salt rounds)
+- **Role-Based Access Control** - Enforce permissions
 
 ### Student Verification
 
-- Admin manual review of student IDs
-- Email verification required
-- Driver background checks
+- Admin review of registrations
+- University email domain validation (@sm.imamu.edu.sa)
+- Driver background checks required
 - Vehicle registration validation
 
 ### Data Protection
 
-- HTTPS recommended for production
-- Secure WebSocket connections (WSS)
-- Input validation and sanitization
-- Rate limiting on API endpoints
+- **HTTPS/WSS** - Encrypted connections (in production)
+- **Input Validation** - Sanitize all user inputs
+- **Rate Limiting** - Prevent abuse on API endpoints
+- **No Personal Data Sharing** - In-app messaging only
 
 ### Safety Features
 
 - Real-time location sharing
-- In-app messaging (no phone numbers shared)
-- Driver ratings and reviews
-- Emergency contact options
+- In-app messaging (no phone numbers exposed)
 - Trip history and receipts
+- Emergency contact options
+- Driver ratings and reviews
 
-## Design
+---
 
-### Color Palette
+## Documentation
 
-- **Primary Blues**: `#1e40af`, `#2563eb`, `#3b82f6`
-- **Light Accents**: `#60a5fa`, `#dbeafe`, `#eff6ff`
-- **White**: `#ffffff`
-- **Text**: `#1e3a8a`, `#475569`, `#64748b`
+For detailed information, see:
 
-### Responsive Design
+- **[Dashboard Architecture](./DASHBOARD_ARCHITECTURE.md)** - Technical implementation
+- **[User Guide](./DASHBOARD_GUIDE.md)** - Feature walkthrough
+- **[Authentication Flow](./LOGIN_REDIRECT_GUIDE.md)** - Role-based access
+- **[QA Checklist](./IMPLEMENTATION_CHECKLIST.md)** - Testing procedures
+- **[Documentation Index](./DOCUMENTATION_INDEX.md)** - Complete reference
 
-- Desktop: 3-column layout (form | map | chat)
-- Tablet: 2-column layout
-- Mobile: Stacked layout
-
-## To-Do List
-
-- [x] Landing page with student focus
-- [x] Login with role selection
-- [x] Signup with student verification
-- [x] Student dashboard with ride request
-- [x] Real-time map tracking
-- [x] Live chat with Socket.io
-- [ ] Driver dashboard
-- [ ] Admin verification panel
-- [ ] Database integration (MongoDB/PostgreSQL)
-- [ ] Payment gateway integration
-- [ ] Push notifications
-- [ ] Rating and review system
-- [ ] Ride history
-- [ ] Analytics dashboard
-- [ ] Mobile app (React Native)
+---
 
 ## Deployment
 
-### Environment Variables
+### Environment Setup
 
-Create a `.env` file:
+Configure these environment variables:
 
-```
+```env
 PORT=3000
 NODE_ENV=production
-DATABASE_URL=your_database_url
-SESSION_SECRET=your_secret_key
+JWT_SECRET=very_long_random_secret_key
+DATABASE_URL=postgresql://user:password@host:5432/amam_db
+ADMIN_KEY=random_admin_override_key
 ```
 
 ### Production Checklist
 
 - [ ] Set up SSL/TLS certificates (HTTPS)
-- [ ] Configure database
-- [ ] Implement authentication (JWT/sessions)
-- [ ] Add password hashing (bcrypt)
-- [ ] Set up email service (verification emails)
-- [ ] Configure file uploads (student IDs, licenses)
-- [ ] Add logging (Winston/Morgan)
-- [ ] Set up monitoring (PM2)
-- [ ] Implement rate limiting
-- [ ] Add error handling middleware
+- [ ] Configure PostgreSQL database
+- [ ] Set JWT_SECRET to strong random value
+- [ ] Set NODE_ENV=production
+- [ ] Change default admin password
+- [ ] Set up email service for verifications
+- [ ] Enable rate limiting
+- [ ] Set up logging (Winston/Morgan)
+- [ ] Configure PM2 for process management
+- [ ] Set up monitoring and alerts
+- [ ] Enable database backups
+- [ ] Configure CDN for static assets
 
-## Contact
+### Deployment Platforms
 
-- **Project**: Amam Student Ride Sharing
-  //- **Support**: support@amam-student.edu (example)
-
-//## License
-
-//MIT License - See LICENSE file for details
-
-## Acknowledgments
-
-- OpenStreetMap for map tiles
-- Socket.io for real-time communication
-- Leaflet.js for interactive maps
-- Student safety and community first
+Tested on:
+- Heroku
+- AWS EC2
+- DigitalOcean
+- Railway
+- Render
 
 ---
 
-© 2026 Amam Student. Verified students only. Making campus commutes better.
+## Development
 
-\*/ ## Features
+### Available Scripts
 
-//### Landing Page (index.html)
-
-- **Responsive Navigation Bar** - Fixed header with smooth blur effect
-- **Hero Section** - Eye-catching headline with animated phone mockup
-- **Features Grid** - Showcase 6 key platform features
-- **How It Works** - Step-by-step user guide
-- **Statistics Section** - Display impressive company metrics
-- **Call-to-Action** - Download buttons for mobile apps
-- **Comprehensive Footer** - Company info and links
-
-//### Login Page (login.html)
-
-- **Secure Login Form** - Email and password authentication
-- **Password Toggle** - Show/hide password functionality
-- **Remember Me** - Session persistence option
-- **Social Login** - Google, Facebook, and Apple integration
-- **Forgot Password** - Account recovery link
-- **Responsive Design** - Works on all device sizes
-- **Form Validation** - Client-side input validation
-- **Error Handling** - User-friendly error messages
-
-//## Project Structure
-
-```
-project/
-├── public/
-│   ├── index.html          # Main landing page
-│   └── login.html          # Login/authentication page
-├── server.js               # Node.js server file
-└── README.md              # Project documentation
+```bash
+npm start              # Start production server
+npm run dev           # Start with auto-reload
+npm run lint          # Check code style (ESLint)
+npm run lint:fix      # Auto-fix style issues
+npm run format        # Format code (Prettier)
+npm run seed-admin    # Create default admin
+npm run test          # Run test suite
 ```
 
-#//# Installation
+### Code Quality
 
-//### Prerequisites
+- **ESLint** - Enforce code standards
+- **Prettier** - Auto code formatting
+- **Functional Tests** - API endpoint verification
 
-- Node.js (v12 or higher)
-- npm (Node Package Manager)
+### Git Workflow
 
-//### Steps
+```bash
+git checkout -b feature/feature-name
+# Make changes
+git add .
+git commit -m "Add description"
+git push origin feature/feature-name
+# Create Pull Request
+```
 
-1. **Clone the repository**
-
-   ```bash
-   git clone <repository-url>
-   cd project
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Start the server**
-
-   ```bash
-   node server.js
-   ```
-
-4. **Open in browser**
-   ```
-   http://localhost:3000
-   ```
-
-//## Usage
-
-\*/### Development
-
-- The main landing page is accessible at the root URL
-- Login page is accessible via the "Login" button in navigation or at `/login.html`
-- All pages are fully responsive and work on mobile, tablet, and desktop\*/
-
-\*/### Customization
-
-- **Colors**: Modify the CSS gradient values in the `<style>` sections
-- **Content**: Update text directly in the HTML files
-- **Images**: Replace emoji icons with actual images or SVG files
-- **Functionality**: Extend JavaScript in the `<script>` sections
-
-## Pages
-
-### 1. Landing Page (`index.html`)
-
-The main homepage featuring:
-
-- Animated hero section with phone mockup
-- Feature cards highlighting platform benefits
-- Step-by-step how-it-works guide
-- Statistics showcasing platform success
-- Download CTAs for iOS and Android
-- Comprehensive footer with links
-
-**Sections:**
-
-- Navigation
-- Hero
-- Features
-- How It Works
-- Statistics
-- Final CTA
-- Footer
-
-### 2. Login Page (`login.html`)
-
-Secure authentication page featuring:
-
-- Email/password login form
-- Password visibility toggle
-- Remember me checkbox
-- Forgot password link
-- Social login buttons (Google, Facebook, Apple)
-- Sign up redirect link
-- Back to home navigation
-
-**Interactive Elements:**
-
-- Password show/hide toggle
-- Form validation
-- Error message animations
-- Input focus effects
-- Demo login functionality
+---
 
 ## Design
 
@@ -553,64 +480,22 @@ Secure authentication page featuring:
 - **Primary Blue**: `#1e40af`, `#2563eb`, `#3b82f6`
 - **Light Blue**: `#60a5fa`, `#dbeafe`, `#eff6ff`
 - **White**: `#ffffff`
-- **Text**: `#1e3a8a`, `#475569`, `#64748b`
+- **Text Dark**: `#1e3a8a`
+- **Text Light**: `#475569`, `#64748b`
 
 ### Typography
 
 - **Font Family**: Segoe UI, Tahoma, Geneva, Verdana, sans-serif
-- **Headings**: Bold, large sizes (2rem - 4rem)
-- **Body Text**: Regular weight, 1rem - 1.3rem
-
-### Animations
-
-- Floating elements
-- Smooth hover transitions
-- Slide-up page entrance
-- Shake error messages
-- Scale transformations
+- **Headings**: Bold, 2rem - 4rem
+- **Body**: Regular, 1rem - 1.3rem
 
 ### Responsive Breakpoints
 
-- **Desktop**: > 768px
-- **Tablet/Mobile**: ≤ 768px
+- **Desktop**: > 768px (3-column layout)
+- **Tablet**: 481px - 768px (2-column layout)
+- **Mobile**: ≤ 480px (stacked layout)
 
-## Technologies
-
-- **HTML5** - Semantic markup
-- **CSS3** - Modern styling with gradients, animations, and flexbox/grid
-- **JavaScript (ES6+)** - Interactive functionality
-- **Node.js** - Server (if applicable)
-- **No external frameworks** - Pure vanilla code for lightweight performance
-
-## Features Breakdown
-
-### Security Features
-
-- Password masking/unmasking
-- Form validation
-- HTTPS ready (when deployed)
-
-### Performance
-
-- Lightweight (no heavy frameworks)
-- Optimized animations
-- Fast load times
-- Minimal dependencies
-
-### Accessibility
-
-- Semantic HTML
-- Proper form labels
-- Keyboard navigation support
-- Screen reader friendly
-
-### User Experience
-
-- Smooth animations
-- Clear call-to-actions
-- Intuitive navigation
-- Mobile-first responsive design
-- Visual feedback on interactions
+---
 
 ## Browser Support
 
@@ -620,53 +505,50 @@ Secure authentication page featuring:
 - ✅ Edge (latest)
 - ✅ Mobile browsers (iOS Safari, Chrome Mobile)
 
-Contributions are welcome! Please follow these steps:
+---
+
+## Contributing
+
+Contributions are welcome! Please follow these guidelines:
 
 1. Fork the repository
-2. Create a new branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
 ### Coding Standards
 
 - Use semantic HTML
-- Follow CSS BEM methodology where possible
+- Follow CSS best practices
 - Write clean, commented JavaScript
 - Ensure responsive design
 - Test on multiple browsers
 
-## To-Do List
-
-- [ ] Add backend authentication API
-- [ ] Implement actual social login integration
-- [ ] Create sign-up page
-- [ ] Add password recovery flow
-- [ ] Implement user dashboard
-- [ ] Add ride booking functionality
-- [ ] Create driver portal
-- [ ] Add real-time ride tracking
-- [ ] Implement payment gateway
-- [ ] Add admin panel
-
-## Contact
-
-For questions or feedback, please reach out:
-
-- **Project**: Amam Ride Sharing
-- **Email**: support@amam.com (example)
-- **Website**: [www.amam.com](https://www.amam.com) (example)
+---
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-- Design inspiration from modern ride-sharing apps
-- Icons: Emoji-based for simplicity
-- Color scheme: Modern blue gradients for trust and professionalism
+---
+
+## Contact & Support
+
+**Project**: Amam Student Ride Sharing  
+**University**: Imam Muhammad Ibn Saud Islamic University  
+**Email**: support@amam.com (example)
 
 ---
 
-© 2025 Amam. All rights reserved. Making every journey count.\*/
+## Acknowledgments
 
-\*/
+- **OpenStreetMap** - Map tiles and geolocation
+- **Socket.io** - Real-time communication
+- **Leaflet.js** - Interactive maps
+- **Supabase** - Authentication infrastructure
+- Special thanks to all contributors
+
+---
+
+© 2026 Amam Student Ride Sharing. Verified students only. Making campus commutes better.

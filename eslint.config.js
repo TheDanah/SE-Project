@@ -17,10 +17,10 @@ module.exports = [
     rules: {
       'no-unused-vars': 'warn',
       'no-console': 'off',
-      'indent': ['warn', 2],
+      indent: ['warn', 2],
       'linebreak-style': ['warn', 'unix'],
-      'quotes': ['warn', 'single'],
-      'semi': ['warn', 'always'],
+      quotes: ['warn', 'single'],
+      semi: ['warn', 'always'],
       'no-trailing-spaces': 'warn',
       'eol-last': 'warn',
     },
