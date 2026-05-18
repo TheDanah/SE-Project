@@ -1,244 +1,241 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign Up - Amam</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Fallback gradient if no image provided */
-            background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            position: relative;
-            /* Allow scrolling on small screens so footer/login link is reachable */
-            overflow: auto;
-        }
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        /* Fallback gradient if no image provided */
+        background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        position: relative;
+        /* Allow scrolling on small screens so footer/login link is reachable */
+        overflow: auto;
+      }
 
-        /* Background image layer. Drop your image at `public/assets/signup-bg.jpg` to use it. */
-        body::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: url('/assets/signup-bg.jpg');
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            opacity: 0.18;
-            z-index: 0;
-        }
+      /* Background image layer. Drop your image at `public/assets/signup-bg.jpg` to use it. */
+      body::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url('/assets/signup-bg.jpg');
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        opacity: 0.18;
+        z-index: 0;
+      }
 
-        body::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            /* Themed blue overlay matching the site's gradient */
-            background: rgba(37, 99, 235, 0.32); /* #2563eb */
-            z-index: 0;
-            mix-blend-mode: multiply;
-        }
+      body::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        /* Themed blue overlay matching the site's gradient */
+        background: rgba(37, 99, 235, 0.32); /* #2563eb */
+        z-index: 0;
+        mix-blend-mode: multiply;
+      }
 
-        .signup-container {
-            background: rgba(255,255,255,0.98);
-            border-radius: 30px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 550px;
-            padding: 3rem 2.5rem;
-            /* Keep container fully visible on small viewports */
-            max-height: calc(100vh - 4rem);
-            overflow-y: auto;
-            animation: slideUp 0.6s ease-out;
-            position: relative;
-            z-index: 1;
-            backdrop-filter: blur(4px);
-        }
+      .signup-container {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 30px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 550px;
+        padding: 3rem 2.5rem;
+        /* Keep container fully visible on small viewports */
+        max-height: calc(100vh - 4rem);
+        overflow-y: auto;
+        animation: slideUp 0.6s ease-out;
+        position: relative;
+        z-index: 1;
+        backdrop-filter: blur(4px);
+      }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
         }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-        .logo-section {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
+      .logo-section {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
 
-        .logo {
-            font-size: 3rem;
-            margin-bottom: 0.5rem;
-        }
+      .logo {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+      }
 
-        .logo-text {
-            font-size: 2rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, #1e40af, #3b82f6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
+      .logo-text {
+        font-size: 2rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, #1e40af, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+      }
 
-        .welcome-text {
-            color: #64748b;
-            font-size: 0.95rem;
-        }
+      .welcome-text {
+        color: #64748b;
+        font-size: 0.95rem;
+      }
 
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #1e3a8a;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #1e3a8a;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
 
-        .input-wrapper {
-            position: relative;
-        }
+      .input-wrapper {
+        position: relative;
+      }
 
-        .form-input {
-            width: 100%;
-            padding: 0.875rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            transition: all 0.3s;
-        }
+      .form-input {
+        width: 100%;
+        padding: 0.875rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        transition: all 0.3s;
+      }
 
-        .form-input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
+      .form-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
 
-        select.form-input {
-            cursor: pointer;
-        }
+      select.form-input {
+        cursor: pointer;
+      }
 
-        .signup-button {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #2563eb, #3b82f6);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 1rem;
-        }
+      .signup-button {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 1rem;
+      }
 
-        .signup-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
-        }
+      .signup-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+      }
 
-        .login-text {
-            text-align: center;
-            margin-top: 1.5rem;
-            color: #64748b;
-            font-size: 0.95rem;
-        }
+      .login-text {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: #64748b;
+        font-size: 0.95rem;
+      }
 
-        .login-text a {
-            color: #3b82f6;
-            text-decoration: none;
-            font-weight: 600;
-        }
+      .login-text a {
+        color: #3b82f6;
+        text-decoration: none;
+        font-weight: 600;
+      }
 
-        .info-box {
-            background: #eff6ff;
-            border-left: 4px solid #3b82f6;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-            color: #1e40af;
-        }
+      .info-box {
+        background: #eff6ff;
+        border-left: 4px solid #3b82f6;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #1e40af;
+      }
 
-        .required {
-            color: #dc2626;
-        }
+      .required {
+        color: #dc2626;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="signup-container">
-        <div class="logo-section">
-            <div class="logo">ō͡≡o˞̶</div>
-            <div class="logo-text">Join Amam</div>
-            <p class="welcome-text">Ride sharing platform</p>
-        </div>
+      <div class="logo-section">
+        <div class="logo">ō͡≡o˞̶</div>
+        <div class="logo-text">Join Amam</div>
+        <p class="welcome-text">Ride sharing platform</p>
+      </div>
 
-        <!-- <div class="info-box">
+      <!-- <div class="info-box">
             📋 <strong>Important:</strong> You must use your university email (sm.imamu.edu.sa) and provide a valid student ID. Admin will verify your credentials before activation.
         </div> -->
 
-        <form id="signupForm">
-            <div class="form-group">
-                <label for="accountType">Select Role <span class="required">*</span></label>
-                <select id="accountType" class="form-input" required>
-                    <option value="student">Student</option>
-                    <option value="faculty">Faculty Member</option>
-                </select>
+      <form id="signupForm">
+        <div class="form-group">
+          <label for="accountType">Select Role <span class="required">*</span></label>
+          <select id="accountType" class="form-input" required>
+            <option value="student">Student</option>
+            <option value="faculty">Faculty Member</option>
+          </select>
+        </div>
 
+        <div class="form-group">
+          <label for="name">Name <span class="required">*</span></label>
+          <input
+            type="text"
+            id="fullName"
+            class="form-input"
+            placeholder="Enter your name"
+            required
+          />
+        </div>
 
-            </div>
+        <div class="form-group">
+          <label for="username">Username <span class="required">*</span></label>
+          <input
+            type="text"
+            id="username"
+            class="form-input"
+            placeholder="Choose a username"
+            required
+          />
+        </div>
 
+        <div class="form-group">
+          <label for="email">University Email <span class="required">*</span></label>
+          <input
+            type="email"
+            id="email"
+            class="form-input"
+            placeholder="email@sm.imamu.edu.sa"
+            required
+          />
+        </div>
 
-            <div class="form-group">
-                <label for="name">Name <span class="required">*</span></label>
-                <input 
-                    type="text" 
-                    id="fullName" 
-                    class="form-input" 
-                    placeholder="Enter your name"
-                    required
-                >
-            </div>
-
-            <div class="form-group">
-                <label for="username">Username <span class="required">*</span></label>
-                <input 
-                    type="text" 
-                    id="username" 
-                    class="form-input" 
-                    placeholder="Choose a username"
-                    required
-                >
-            </div>
-
-            <div class="form-group">
-                <label for="email">University Email <span class="required">*</span></label>
-                <input 
-                    type="email" 
-                    id="email" 
-                    class="form-input" 
-                    placeholder="email@sm.imamu.edu.sa"
-                    required
-                >
-            </div>
-
-            <!-- <div class="form-group">
+        <!-- <div class="form-group">
                 <label for="studentId">Student ID <span class="required">*</span></label>
                 <input 
                     type="text" 
@@ -249,9 +246,7 @@
                 >
             </div> -->
 
-          
-
-            <!-- <div class="form-group">
+        <!-- <div class="form-group">
                 <label for="major">Major/Department</label>
                 <input 
                     type="text" 
@@ -261,146 +256,139 @@
                 >
             </div> -->
 
-            <div class="form-group">
-                <label for="password">Password <span class="required">*</span></label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    class="form-input" 
-                    placeholder="Choose password"
-                    required
-                >
-            </div>
-
-            <div class="form-group">
-                <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
-                <input 
-                    type="password" 
-                    id="confirmPassword" 
-                    class="form-input" 
-                    placeholder="Re-enter your password"
-                    required
-                >
-            </div>
-        
-
-
-            <button type="submit" class="signup-button">
-                Create Account
-            </button>
-        </form>
-
-
-
-
-        <div class="login-text">
-            Already have an account? <a href="login.html">Login here</a>
+        <div class="form-group">
+          <label for="password">Password <span class="required">*</span></label>
+          <input
+            type="password"
+            id="password"
+            class="form-input"
+            placeholder="Choose password"
+            required
+          />
         </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+          <input
+            type="password"
+            id="confirmPassword"
+            class="form-input"
+            placeholder="Re-enter your password"
+            required
+          />
+        </div>
+
+        <button type="submit" class="signup-button">Create Account</button>
+      </form>
+
+      <div class="login-text">Already have an account? <a href="login.html">Login here</a></div>
     </div>
 
     <script>
-        const accountType = document.getElementById('accountType');
-        const signupForm = document.getElementById('signupForm');
+      const accountType = document.getElementById('accountType');
+      const signupForm = document.getElementById('signupForm');
 
-        function showMessage(text) {
-            alert(text);
-        }
+      function showMessage(text) {
+        alert(text);
+      }
 
-        if (signupForm) {
-            signupForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
+      if (signupForm) {
+        signupForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
 
-                const role = document.getElementById('accountType').value;
-                const fullName = document.getElementById('fullName').value.trim();
-                const username = document.getElementById('username').value.trim();
-                const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value;
-                const confirmPassword = document.getElementById('confirmPassword').value;
+          const role = document.getElementById('accountType').value;
+          const fullName = document.getElementById('fullName').value.trim();
+          const username = document.getElementById('username').value.trim();
+          const email = document.getElementById('email').value.trim();
+          const password = document.getElementById('password').value;
+          const confirmPassword = document.getElementById('confirmPassword').value;
 
-                if (!role || !fullName || !username || !email || !password || !confirmPassword) {
-                    showMessage('Invalid required information. Please fill all required fields.');
-                    return;
-                }
+          if (!role || !fullName || !username || !email || !password || !confirmPassword) {
+            showMessage('Invalid required information. Please fill all required fields.');
+            return;
+          }
 
-                if (password.length < 8) {
-                    showMessage('Password must be at least 8 characters long.');
-                    return;
-                }
+          if (password.length < 8) {
+            showMessage('Password must be at least 8 characters long.');
+            return;
+          }
 
-                if (password !== confirmPassword) {
-                    showMessage('Passwords do not match! Please re-enter them.');
-                    return;
-                }
+          if (password !== confirmPassword) {
+            showMessage('Passwords do not match! Please re-enter them.');
+            return;
+          }
 
-                const lower = email.toLowerCase();
-                if (role === 'student' && !lower.endsWith('@sm.imamu.edu.sa')) {
-                    showMessage('Invalid university email for Student. Use @sm.imamu.edu.sa');
-                    return;
-                }
-                if (role === 'faculty' && !lower.endsWith('@imamu.edu.sa')) {
-                    showMessage('Invalid university email for Faculty. Use @imamu.edu.sa');
-                    return;
-                }
+          const lower = email.toLowerCase();
+          if (role === 'student' && !lower.endsWith('@sm.imamu.edu.sa')) {
+            showMessage('Invalid university email for Student. Use @sm.imamu.edu.sa');
+            return;
+          }
+          if (role === 'faculty' && !lower.endsWith('@imamu.edu.sa')) {
+            showMessage('Invalid university email for Faculty. Use @imamu.edu.sa');
+            return;
+          }
 
-                const studentId = role === 'student' ? email.split('@')[0] : username;
+          const studentId = role === 'student' ? email.split('@')[0] : username;
 
-                // Pre-check whether email already exists to give immediate feedback
-                try {
-                    const checkRes = await fetch('/api/check-email-exists', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email })
-                    });
-                    const checkData = await checkRes.json().catch(() => ({}));
-                    if (checkRes.ok && checkData.exists) {
-                        showMessage('An account already exists with that email. Please log in.');
-                        return;
-                    }
-                } catch (err) {
-                    // Ignore check errors and continue to attempt registration; server will respond accordingly
-                    console.warn('Email check failed, continuing to register', err);
-                }
-
-                const formData = {
-                    username: username,
-                    fullName: fullName,
-                    email: email,
-                    password: password,
-                    studentId: studentId,
-                    university: universityInput || 'Imam Mohammed Ibn Saud Islamic University',
-                    accountType: role
-                };
-
-                try {
-                    const response = await fetch('/api/register', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(formData)
-                    });
-
-                    const data = await response.json().catch(() => ({}));
-
-                    if (!response.ok) {
-                        const serverMsg = data.error || '';
-                        if (/exists/i.test(serverMsg)) {
-                            showMessage('An account already exists with that email/username/student ID. Please log in.');
-                        } else {
-                            const msg = serverMsg || 'Account creation failed. Please try again.';
-                            showMessage(msg);
-                        }
-                        return;
-                    }
-
-                    
-                    showMessage('Account created. A verification email was sent — please check your inbox (and spam).');
-                    window.location.href = 'login.html';
-
-                } catch (error) {
-                    console.error('Registration/network error:', error);
-                    showMessage('Network error. Please check your connection and try again.');
-                }
+          // Pre-check whether email already exists to give immediate feedback
+          try {
+            const checkRes = await fetch('/api/check-email-exists', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email }),
             });
-        }
+            const checkData = await checkRes.json().catch(() => ({}));
+            if (checkRes.ok && checkData.exists) {
+              showMessage('An account already exists with that email. Please log in.');
+              return;
+            }
+          } catch (err) {
+            // Ignore check errors and continue to attempt registration; server will respond accordingly
+            console.warn('Email check failed, continuing to register', err);
+          }
+
+          const formData = {
+            username: username,
+            fullName: fullName,
+            email: email,
+            password: password,
+            studentId: studentId,
+            university: universityInput || 'Imam Mohammed Ibn Saud Islamic University',
+            accountType: role,
+          };
+
+          try {
+            const response = await fetch('/api/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(formData),
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+              const serverMsg = data.error || '';
+              if (/exists/i.test(serverMsg)) {
+                showMessage(
+                  'An account already exists with that email/username/student ID. Please log in.'
+                );
+              } else {
+                const msg = serverMsg || 'Account creation failed. Please try again.';
+                showMessage(msg);
+              }
+              return;
+            }
+
+            showMessage(
+              'Account created. A verification email was sent — please check your inbox (and spam).'
+            );
+            window.location.href = 'login.html';
+          } catch (error) {
+            console.error('Registration/network error:', error);
+            showMessage('Network error. Please check your connection and try again.');
+          }
+        });
+      }
     </script>
-</body>
+  </body>
 </html>

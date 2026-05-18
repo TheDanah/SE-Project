@@ -1,1424 +1,1569 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard - Amam</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f8fafc;
+        color: #1e3a8a;
+        margin-left: 260px;
+      }
+
+      /* Sidebar Navigation */
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 260px;
+        height: 100vh;
+        background: linear-gradient(135deg, #1e40af, #2563eb);
+        color: white;
+        padding: 2rem 1rem;
+        overflow-y: auto;
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .sidebar-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
+      .sidebar-logo div {
+        font-size: 2rem;
+      }
+
+      .sidebar-nav {
+        list-style: none;
+      }
+
+      .sidebar-nav li {
+        margin-bottom: 0.5rem;
+      }
+
+      .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+
+      .sidebar-nav a:hover,
+      .sidebar-nav a.active {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+      }
+
+      /* Header */
+      .header {
+        background: white;
+        color: #1e3a8a;
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .user-info {
+        text-align: right;
+      }
+
+      .user-info h3 {
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .user-info p {
+        font-size: 0.85rem;
+        color: #64748b;
+      }
+
+      .logout-btn {
+        background: linear-gradient(135deg, #dc2626, #ef4444);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .logout-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+      }
+
+      /* Container */
+      .container {
+        padding: 2rem;
+      }
+
+      /* Stats Grid */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #3b82f6;
+      }
+
+      .stat-card.warning {
+        border-left-color: #f59e0b;
+      }
+
+      .stat-card.success {
+        border-left-color: #10b981;
+      }
+
+      .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #1e40af;
+        margin-bottom: 0.25rem;
+      }
+
+      .stat-label {
+        font-size: 0.95rem;
+        color: #64748b;
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid #e2e8f0;
+        flex-wrap: wrap;
+      }
+
+      .tab {
+        padding: 1rem 2rem;
+        background: none;
+        border: none;
+        border-bottom: 3px solid transparent;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #64748b;
+        transition: all 0.3s;
+      }
+
+      .tab.active {
+        color: #2563eb;
+        border-bottom-color: #2563eb;
+      }
+
+      /* Tab Content */
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      /* Verification Cards */
+      .verification-grid {
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      .verification-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .verification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1.5rem;
+      }
+
+      .user-details {
+        flex: 1;
+      }
+
+      .user-details h3 {
+        color: #1e40af;
+        margin-bottom: 0.5rem;
+      }
+
+      .detail-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        color: #475569;
+      }
+
+      .detail-label {
+        font-weight: 600;
+        min-width: 120px;
+      }
+
+      .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+      }
+
+      .status-badge.pending {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .status-badge.approved {
+        background: #d1fae5;
+        color: #065f46;
+      }
+
+      .status-badge.rejected {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .verification-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .approve-btn {
+        flex: 1;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        padding: 0.875rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .approve-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+      }
+
+      .reject-btn {
+        flex: 1;
+        background: white;
+        color: #dc2626;
+        border: 2px solid #dc2626;
+        padding: 0.875rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .reject-btn:hover {
+        background: #dc2626;
+        color: white;
+      }
+
+      .view-btn {
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        margin-left: 0.5rem;
+      }
+
+      /* Search and Filter */
+      .controls {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .search-input,
+      .filter-select {
+        padding: 0.875rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 1rem;
+      }
+
+      .search-input {
+        flex: 1;
+      }
+
+      .search-input:focus,
+      .filter-select:focus {
+        outline: none;
+        border-color: #3b82f6;
+      }
+
+      .filter-select {
+        cursor: pointer;
+        background: white;
+      }
+
+      /* Announcements Section */
+      .announcements-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+
+      .announcement-form {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #1e40af;
+      }
+
+      .form-group input,
+      .form-group textarea,
+      .form-group select {
+        width: 100%;
+        padding: 0.875rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-family: inherit;
+      }
+
+      .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: #3b82f6;
+      }
+
+      .create-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        color: white;
+        border: none;
+        padding: 1rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .create-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+      }
+
+      .announcements-list {
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      .announcement-item {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .announcement-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+      }
+
+      .announcement-header h4 {
+        color: #1e40af;
+      }
+
+      .announcement-date {
+        font-size: 0.85rem;
+        color: #64748b;
+      }
+
+      .announcement-type {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+      }
+
+      .announcement-type.system {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+
+      .announcement-type.event {
+        background: #ddd6fe;
+        color: #5b21b6;
+      }
+
+      .announcement-text {
+        color: #475569;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .announcement-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .btn-edit,
+      .btn-delete {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .btn-edit {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+
+      .btn-delete {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+
+      .btn-edit:hover,
+      .btn-delete:hover {
+        transform: scale(1.05);
+      }
+
+      /* Tech Support Section */
+      .tech-support-section {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .service-toggle {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+        background: #f8fafc;
+        border-radius: 10px;
+      }
+
+      .toggle-switch {
+        width: 60px;
+        height: 32px;
+        background: #e2e8f0;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: background 0.3s;
+        position: relative;
+      }
+
+      .toggle-switch.active {
+        background: #10b981;
+      }
+
+      .toggle-slider {
+        width: 28px;
+        height: 28px;
+        background: white;
+        border-radius: 50%;
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        transition: left 0.3s;
+      }
+
+      .toggle-switch.active .toggle-slider {
+        left: 30px;
+      }
+
+      .support-status {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .status-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #e2e8f0;
+      }
+
+      .status-dot.active {
+        background: #10b981;
+      }
+
+      /* Admin Management Section */
+      .admin-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+
+      .admin-form {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .admin-list {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .admin-item {
+        padding: 1.5rem;
+        background: #f8fafc;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .admin-info h4 {
+        color: #1e40af;
+        margin-bottom: 0.25rem;
+      }
+
+      .admin-info p {
+        font-size: 0.85rem;
+        color: #64748b;
+      }
+
+      .btn-remove {
+        background: #fee2e2;
+        color: #dc2626;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .btn-remove:hover {
+        transform: scale(1.05);
+      }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 20px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .modal-title {
+        font-size: 1.5rem;
+        color: #1e40af;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #64748b;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #94a3b8;
+      }
+
+      .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      @media (max-width: 768px) {
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8fafc;
-            color: #1e3a8a;
-            margin-left: 260px;
+          margin-left: 0;
         }
 
-        /* Sidebar Navigation */
         .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 260px;
-            height: 100vh;
-            background: linear-gradient(135deg, #1e40af, #2563eb);
-            color: white;
-            padding: 2rem 1rem;
-            overflow-y: auto;
-            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+          width: 100%;
+          height: auto;
+          position: relative;
         }
 
-        .sidebar-logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 2rem;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .sidebar-logo div {
-            font-size: 2rem;
-        }
-
-        .sidebar-nav {
-            list-style: none;
-        }
-
-        .sidebar-nav li {
-            margin-bottom: 0.5rem;
-        }
-
-        .sidebar-nav a {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            border-radius: 10px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .sidebar-nav a:hover,
-        .sidebar-nav a.active {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-        }
-
-        /* Header */
-        .header {
-            background: white;
-            color: #1e3a8a;
-            padding: 1.5rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }
-
-        .user-info {
-            text-align: right;
-        }
-
-        .user-info h3 {
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .user-info p {
-            font-size: 0.85rem;
-            color: #64748b;
-        }
-
-        .logout-btn {
-            background: linear-gradient(135deg, #dc2626, #ef4444);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
-        }
-
-        /* Container */
-        .container {
-            padding: 2rem;
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-left: 4px solid #3b82f6;
-        }
-
-        .stat-card.warning {
-            border-left-color: #f59e0b;
-        }
-
-        .stat-card.success {
-            border-left-color: #10b981;
-        }
-
-        .stat-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #1e40af;
-            margin-bottom: 0.25rem;
-        }
-
-        .stat-label {
-            font-size: 0.95rem;
-            color: #64748b;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid #e2e8f0;
-            flex-wrap: wrap;
-        }
-
-        .tab {
-            padding: 1rem 2rem;
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #64748b;
-            transition: all 0.3s;
-        }
-
-        .tab.active {
-            color: #2563eb;
-            border-bottom-color: #2563eb;
-        }
-
-        /* Tab Content */
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Verification Cards */
-        .verification-grid {
-            display: grid;
-            gap: 1.5rem;
-        }
-
-        .verification-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .verification-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 1.5rem;
-        }
-
-        .user-details {
-            flex: 1;
-        }
-
-        .user-details h3 {
-            color: #1e40af;
-            margin-bottom: 0.5rem;
-        }
-
-        .detail-row {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-            font-size: 0.95rem;
-            color: #475569;
-        }
-
-        .detail-label {
-            font-weight: 600;
-            min-width: 120px;
-        }
-
-        .status-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .status-badge.pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-badge.approved {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-badge.rejected {
-            background: #fee2e2;
-            color: #991b1b;
+        .announcements-container,
+        .admin-grid {
+          grid-template-columns: 1fr;
         }
 
         .verification-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
+          flex-direction: column;
         }
 
-        .approve-btn {
-            flex: 1;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            border: none;
-            padding: 0.875rem;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
+        .tabs {
+          overflow-x: auto;
         }
-
-        .approve-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
-        }
-
-        .reject-btn {
-            flex: 1;
-            background: white;
-            color: #dc2626;
-            border: 2px solid #dc2626;
-            padding: 0.875rem;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .reject-btn:hover {
-            background: #dc2626;
-            color: white;
-        }
-
-        .view-btn {
-            background: linear-gradient(135deg, #2563eb, #3b82f6);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            margin-left: 0.5rem;
-        }
-
-        /* Search and Filter */
-        .controls {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .search-input, .filter-select {
-            padding: 0.875rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 1rem;
-        }
-
-        .search-input {
-            flex: 1;
-        }
-
-        .search-input:focus, .filter-select:focus {
-            outline: none;
-            border-color: #3b82f6;
-        }
-
-        .filter-select {
-            cursor: pointer;
-            background: white;
-        }
-
-        /* Announcements Section */
-        .announcements-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-
-        .announcement-form {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #1e40af;
-        }
-
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 0.875rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            font-family: inherit;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-            outline: none;
-            border-color: #3b82f6;
-        }
-
-        .create-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #2563eb, #3b82f6);
-            color: white;
-            border: none;
-            padding: 1rem;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .create-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
-        }
-
-        .announcements-list {
-            display: grid;
-            gap: 1.5rem;
-        }
-
-        .announcement-item {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .announcement-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 1rem;
-        }
-
-        .announcement-header h4 {
-            color: #1e40af;
-        }
-
-        .announcement-date {
-            font-size: 0.85rem;
-            color: #64748b;
-        }
-
-        .announcement-type {
-            display: inline-block;
-            padding: 0.35rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-top: 0.5rem;
-        }
-
-        .announcement-type.system {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .announcement-type.event {
-            background: #ddd6fe;
-            color: #5b21b6;
-        }
-
-        .announcement-text {
-            color: #475569;
-            line-height: 1.6;
-            margin-bottom: 1rem;
-        }
-
-        .announcement-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .btn-edit, .btn-delete {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-edit {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .btn-delete {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-
-        .btn-edit:hover, .btn-delete:hover {
-            transform: scale(1.05);
-        }
-
-        /* Tech Support Section */
-        .tech-support-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .service-toggle {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            padding: 1.5rem;
-            background: #f8fafc;
-            border-radius: 10px;
-        }
-
-        .toggle-switch {
-            width: 60px;
-            height: 32px;
-            background: #e2e8f0;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: background 0.3s;
-            position: relative;
-        }
-
-        .toggle-switch.active {
-            background: #10b981;
-        }
-
-        .toggle-slider {
-            width: 28px;
-            height: 28px;
-            background: white;
-            border-radius: 50%;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: left 0.3s;
-        }
-
-        .toggle-switch.active .toggle-slider {
-            left: 30px;
-        }
-
-        .support-status {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #e2e8f0;
-        }
-
-        .status-dot.active {
-            background: #10b981;
-        }
-
-        /* Admin Management Section */
-        .admin-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-
-        .admin-form {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .admin-list {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .admin-item {
-            padding: 1.5rem;
-            background: #f8fafc;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .admin-info h4 {
-            color: #1e40af;
-            margin-bottom: 0.25rem;
-        }
-
-        .admin-info p {
-            font-size: 0.85rem;
-            color: #64748b;
-        }
-
-        .btn-remove {
-            background: #fee2e2;
-            color: #dc2626;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-remove:hover {
-            transform: scale(1.05);
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            color: #1e40af;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #64748b;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: #94a3b8;
-        }
-
-        .empty-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                margin-left: 0;
-            }
-
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-            }
-
-            .announcements-container,
-            .admin-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .verification-actions {
-                flex-direction: column;
-            }
-
-            .tabs {
-                overflow-x: auto;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="sidebar-logo">
-            <a id="adminLogo" href="/index.html" style="display:flex; align-items:center; gap:0.5rem; text-decoration:none; color:inherit;">
-                <div style="width:36px; height:36px; background:#fff; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#1e40af; font-weight:700; font-size:1rem;">ō͡≡o</div>
-                <span>Amam Admin</span>
-            </a>
-        </div>
-        <nav class="sidebar-nav">
-            <li><a class="active" onclick="switchNav('drivers')">Driver Verification</a></li>
-            <li><a onclick="switchNav('announcements')">Announcements</a></li>
-            <li><a onclick="switchNav('emergencies')">Emergencies</a></li>
-            <li><a onclick="switchNav('support')">Tech Support</a></li>
-            <li><a onclick="switchNav('admins')">Manage Admins</a></li>
-        </nav>
+      <div class="sidebar-logo">
+        <a
+          id="adminLogo"
+          href="/index.html"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: inherit;
+          "
+        >
+          <div
+            style="
+              width: 36px;
+              height: 36px;
+              background: #fff;
+              border-radius: 6px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #1e40af;
+              font-weight: 700;
+              font-size: 1rem;
+            "
+          >
+            ō͡≡o
+          </div>
+          <span>Amam Admin</span>
+        </a>
+      </div>
+      <nav class="sidebar-nav">
+        <li><a class="active" onclick="switchNav('drivers')">Driver Verification</a></li>
+        <li><a onclick="switchNav('announcements')">Announcements</a></li>
+        <li><a onclick="switchNav('emergencies')">Emergencies</a></li>
+        <li><a onclick="switchNav('support')">Tech Support</a></li>
+        <li><a onclick="switchNav('admins')">Manage Admins</a></li>
+      </nav>
     </aside>
 
     <!-- Header -->
     <header class="header">
-        <h1 style="font-size: 1.5rem;">Admin Dashboard</h1>
-        <div class="header-right">
-            <div class="user-info">
-                <h3 id="adminUsername">Admin User</h3>
-                <p id="adminRole">Administrator</p>
-            </div>
-            <button class="logout-btn" onclick="logout()">Logout</button>
+      <h1 style="font-size: 1.5rem">Admin Dashboard</h1>
+      <div class="header-right">
+        <div class="user-info">
+          <h3 id="adminUsername">Admin User</h3>
+          <p id="adminRole">Administrator</p>
         </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
     </header>
 
     <!-- Main Container -->
     <div class="container">
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card warning">
-                <div class="stat-icon"></div>
-                <div class="stat-value" id="pendingDrivers">0</div>
-                <div class="stat-label">Pending Driver Apps</div>
-            </div>
-            <div class="stat-card success">
-                <div class="stat-icon"></div>
-                <div class="stat-value" id="approvedDrivers">0</div>
-                <div class="stat-label">Approved Drivers</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"></div>
-                <div class="stat-value" id="announementCount">0</div>
-                <div class="stat-label">Active Announcements</div>
-            </div>
-            <div class="stat-card success">
-                <div class="stat-icon"></div>
-                <div class="stat-value" id="adminCount">0</div>
-                <div class="stat-label">Admin Accounts</div>
-            </div>
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card warning">
+          <div class="stat-icon"></div>
+          <div class="stat-value" id="pendingDrivers">0</div>
+          <div class="stat-label">Pending Driver Apps</div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-icon"></div>
+          <div class="stat-value" id="approvedDrivers">0</div>
+          <div class="stat-label">Approved Drivers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"></div>
+          <div class="stat-value" id="announementCount">0</div>
+          <div class="stat-label">Active Announcements</div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-icon"></div>
+          <div class="stat-value" id="adminCount">0</div>
+          <div class="stat-label">Admin Accounts</div>
+        </div>
+      </div>
+
+      <!-- Driver Verification Tab -->
+      <div id="driversSection" class="tab-content active">
+        <div class="tabs">
+          <button class="tab active" onclick="switchDriverTab('pending')">
+            Pending (<span id="tabPendingCount">0</span>)
+          </button>
+          <button class="tab" onclick="switchDriverTab('approved')">
+            Approved (<span id="tabApprovedCount">0</span>)
+          </button>
+          <button class="tab" onclick="switchDriverTab('rejected')">
+            Rejected (<span id="tabRejectedCount">0</span>)
+          </button>
         </div>
 
-        <!-- Driver Verification Tab -->
-        <div id="driversSection" class="tab-content active">
-            <div class="tabs">
-                <button class="tab active" onclick="switchDriverTab('pending')">Pending (<span id="tabPendingCount">0</span>)</button>
-                <button class="tab" onclick="switchDriverTab('approved')">Approved (<span id="tabApprovedCount">0</span>)</button>
-                <button class="tab" onclick="switchDriverTab('rejected')">Rejected (<span id="tabRejectedCount">0</span>)</button>
-            </div>
-
-            <div id="pendingTab" class="tab-content active">
-                <div class="controls">
-                    <input type="text" id="searchPending" class="search-input" placeholder="Search by name or email...">
-                </div>
-                <div class="verification-grid" id="pendingGrid">
-                    <!-- Pending driver applications will be rendered here -->
-                </div>
-            </div>
-
-            <div id="approvedTab" class="tab-content">
-                <div class="controls">
-                    <input type="text" id="searchApproved" class="search-input" placeholder="Search approved drivers...">
-                </div>
-                <div class="verification-grid" id="approvedGrid">
-                    <!-- Approved driver list will be rendered here -->
-                </div>
-            </div>
-
-            <div id="rejectedTab" class="tab-content">
-                <div class="empty-state">
-                    <div class="empty-icon"></div>
-                    <h3><span id="rejectedDriversHeader">0</span> Rejected Applications</h3>
-                    <p>Drivers were not approved due to missing documents or verification issues</p>
-                </div>
-            </div>
+        <div id="pendingTab" class="tab-content active">
+          <div class="controls">
+            <input
+              type="text"
+              id="searchPending"
+              class="search-input"
+              placeholder="Search by name or email..."
+            />
+          </div>
+          <div class="verification-grid" id="pendingGrid">
+            <!-- Pending driver applications will be rendered here -->
+          </div>
         </div>
 
-        <!-- Announcements Tab -->
-        <div id="announcementsSection" class="tab-content">
-            <div class="announcements-container">
+        <div id="approvedTab" class="tab-content">
+          <div class="controls">
+            <input
+              type="text"
+              id="searchApproved"
+              class="search-input"
+              placeholder="Search approved drivers..."
+            />
+          </div>
+          <div class="verification-grid" id="approvedGrid">
+            <!-- Approved driver list will be rendered here -->
+          </div>
+        </div>
+
+        <div id="rejectedTab" class="tab-content">
+          <div class="empty-state">
+            <div class="empty-icon"></div>
+            <h3><span id="rejectedDriversHeader">0</span> Rejected Applications</h3>
+            <p>Drivers were not approved due to missing documents or verification issues</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Announcements Tab -->
+      <div id="announcementsSection" class="tab-content">
+        <div class="announcements-container">
+          <div>
+            <div class="announcement-form">
+              <h3 style="color: #1e40af; margin-bottom: 1.5rem">Create Announcement</h3>
+
+              <div class="form-group">
+                <label>Type</label>
+                <select id="announcementType">
+                  <option value="system">System Notification</option>
+                  <option value="event">University Event</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Title</label>
+                <input
+                  type="text"
+                  id="announcementTitle"
+                  placeholder="e.g., New Campus Route Available"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Message</label>
+                <textarea
+                  id="announcementMessage"
+                  placeholder="Type your announcement here..."
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Event Date (if applicable)</label>
+                <input type="datetime-local" id="eventDate" />
+              </div>
+
+              <button class="create-btn" onclick="createAnnouncement()">Post Announcement</button>
+            </div>
+          </div>
+
+          <div>
+            <h3 style="color: #1e40af; margin-bottom: 1.5rem">Recent Announcements</h3>
+            <div class="announcements-list">
+              <div class="announcement-item">
+                <div class="announcement-header">
+                  <div>
+                    <h4>Platform Maintenance</h4>
+                    <span class="announcement-type system">System</span>
+                  </div>
+                  <span class="announcement-date">Nov 5, 2025</span>
+                </div>
+                <p class="announcement-text">
+                  Platform will be under maintenance from 2-4 AM. Services may be temporarily
+                  unavailable.
+                </p>
+                <div class="announcement-actions">
+                  <button class="btn-edit">Edit</button>
+                  <button class="btn-delete">Delete</button>
+                </div>
+              </div>
+
+              <div class="announcement-item">
+                <div class="announcement-header">
+                  <div>
+                    <h4>Annual Sports Day</h4>
+                    <span class="announcement-type event">Event</span>
+                  </div>
+                  <span class="announcement-date">Nov 4, 2025</span>
+                </div>
+                <p class="announcement-text">
+                  Join us for the Annual Sports Day on November 15th! Rides available to the sports
+                  complex starting 8 AM.
+                </p>
+                <div class="announcement-actions">
+                  <button class="btn-edit">Edit</button>
+                  <button class="btn-delete">Delete</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emergencies Tab -->
+      <div id="emergenciesSection" class="tab-content">
+        <div class="announcements-container">
+          <div>
+            <h3 style="color: #1e40af; margin-bottom: 1.5rem">Live Emergency Alerts</h3>
+            <div id="emergencyList">
+              <div class="announcement-item">
+                <div class="announcement-header">
+                  <div>
+                    <h4>No active emergencies</h4>
+                  </div>
+                  <span class="announcement-date">—</span>
+                </div>
+                <p class="announcement-text">
+                  When a user presses the emergency button, alerts will appear here in real time.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tech Support Tab -->
+      <div id="supportSection" class="tab-content">
+        <div class="tech-support-section">
+          <h3 style="color: #1e40af; margin-bottom: 2rem">Tech Support Service Configuration</h3>
+
+          <div class="service-toggle">
+            <div>
+              <h4 style="color: #1e40af">24/7 Tech Support</h4>
+              <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.25rem">
+                Enable or disable tech support service availability
+              </p>
+            </div>
+            <div class="toggle-switch active" onclick="toggleTechSupport()">
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+
+          <div
+            class="support-status"
+            style="padding: 1.5rem; background: #f8fafc; border-radius: 10px"
+          >
+            <div class="status-dot active"></div>
+            <div>
+              <strong>Status: Active</strong>
+              <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem">
+                Tech support is currently available to all users
+              </p>
+            </div>
+          </div>
+
+          <h3 style="color: #1e40af; margin-top: 2rem; margin-bottom: 1.5rem">Support Tickets</h3>
+
+          <div class="verification-grid">
+            <div class="verification-card">
+              <div class="verification-header">
+                <div class="user-details">
+                  <h3>#TICKET-001</h3>
+                  <div class="detail-row">
+                    <span class="detail-label">User:</span>
+                    <span>student@university.edu</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Issue:</span>
+                    <span>Cannot request ride</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Date:</span>
+                    <span>Nov 5, 2025 - 10:30 AM</span>
+                  </div>
+                </div>
                 <div>
-                    <div class="announcement-form">
-                        <h3 style="color: #1e40af; margin-bottom: 1.5rem;">Create Announcement</h3>
-                        
-                        <div class="form-group">
-                            <label>Type</label>
-                            <select id="announcementType">
-                                <option value="system">System Notification</option>
-                                <option value="event">University Event</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Title</label>
-                            <input type="text" id="announcementTitle" placeholder="e.g., New Campus Route Available">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Message</label>
-                            <textarea id="announcementMessage" placeholder="Type your announcement here..."></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Event Date (if applicable)</label>
-                            <input type="datetime-local" id="eventDate">
-                        </div>
-
-                        <button class="create-btn" onclick="createAnnouncement()">Post Announcement</button>
-                    </div>
+                  <span class="status-badge pending">Open</span>
                 </div>
-
-                <div>
-                    <h3 style="color: #1e40af; margin-bottom: 1.5rem;">Recent Announcements</h3>
-                    <div class="announcements-list">
-                        <div class="announcement-item">
-                                <div class="announcement-header">
-                                    <div>
-                                        <h4>Platform Maintenance</h4>
-                                        <span class="announcement-type system">System</span>
-                                    </div>
-                                    <span class="announcement-date">Nov 5, 2025</span>
-                                </div>
-                            <p class="announcement-text">Platform will be under maintenance from 2-4 AM. Services may be temporarily unavailable.</p>
-                            <div class="announcement-actions">
-                                <button class="btn-edit">Edit</button>
-                                <button class="btn-delete">Delete</button>
-                            </div>
-                        </div>
-
-                        <div class="announcement-item">
-                            <div class="announcement-header">
-                                <div>
-                                    <h4>Annual Sports Day</h4>
-                                    <span class="announcement-type event">Event</span>
-                                </div>
-                                <span class="announcement-date">Nov 4, 2025</span>
-                            </div>
-                            <p class="announcement-text">Join us for the Annual Sports Day on November 15th! Rides available to the sports complex starting 8 AM.</p>
-                            <div class="announcement-actions">
-                                <button class="btn-edit">Edit</button>
-                                <button class="btn-delete">Delete</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+              </div>
             </div>
-        </div>
 
-        <!-- Emergencies Tab -->
-        <div id="emergenciesSection" class="tab-content">
-            <div class="announcements-container">
+            <div class="verification-card">
+              <div class="verification-header">
+                <div class="user-details">
+                  <h3>#TICKET-002</h3>
+                  <div class="detail-row">
+                    <span class="detail-label">User:</span>
+                    <span>driver@university.edu</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Issue:</span>
+                    <span>GPS not updating</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Date:</span>
+                    <span>Nov 5, 2025 - 09:15 AM</span>
+                  </div>
+                </div>
                 <div>
-                    <h3 style="color: #1e40af; margin-bottom: 1.5rem;">Live Emergency Alerts</h3>
-                    <div id="emergencyList">
-                        <div class="announcement-item">
-                            <div class="announcement-header">
-                                <div>
-                                    <h4>No active emergencies</h4>
-                                </div>
-                                <span class="announcement-date">—</span>
-                            </div>
-                            <p class="announcement-text">When a user presses the emergency button, alerts will appear here in real time.</p>
-                        </div>
-                    </div>
+                  <span class="status-badge approved">Resolved</span>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
 
-        <!-- Tech Support Tab -->
-        <div id="supportSection" class="tab-content">
-            <div class="tech-support-section">
-                <h3 style="color: #1e40af; margin-bottom: 2rem;">Tech Support Service Configuration</h3>
-                
-                <div class="service-toggle">
-                    <div>
-                        <h4 style="color: #1e40af;">24/7 Tech Support</h4>
-                        <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.25rem;">Enable or disable tech support service availability</p>
-                    </div>
-                    <div class="toggle-switch active" onclick="toggleTechSupport()">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
+      <!-- Admin Management Tab -->
+      <div id="adminsSection" class="tab-content">
+        <div class="admin-grid">
+          <div>
+            <div class="admin-form">
+              <h3 style="color: #1e40af; margin-bottom: 1.5rem">Create New Admin Account</h3>
 
-                <div class="support-status" style="padding: 1.5rem; background: #f8fafc; border-radius: 10px;">
-                    <div class="status-dot active"></div>
-                    <div>
-                        <strong>Status: Active</strong>
-                        <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Tech support is currently available to all users</p>
-                    </div>
-                </div>
+              <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="newAdminUsername" placeholder="e.g., admin2" />
+              </div>
 
-                <h3 style="color: #1e40af; margin-top: 2rem; margin-bottom: 1.5rem;">Support Tickets</h3>
-                
-                <div class="verification-grid">
-                    <div class="verification-card">
-                        <div class="verification-header">
-                            <div class="user-details">
-                                <h3>#TICKET-001</h3>
-                                <div class="detail-row">
-                                    <span class="detail-label">User:</span>
-                                    <span>student@university.edu</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Issue:</span>
-                                    <span>Cannot request ride</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Date:</span>
-                                    <span>Nov 5, 2025 - 10:30 AM</span>
-                                </div>
-                            </div>
-                            <div>
-                                <span class="status-badge pending">Open</span>
-                            </div>
-                        </div>
-                    </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input
+                  type="password"
+                  id="newAdminPassword"
+                  placeholder="Strong password recommended"
+                />
+              </div>
 
-                    <div class="verification-card">
-                        <div class="verification-header">
-                            <div class="user-details">
-                                <h3>#TICKET-002</h3>
-                                <div class="detail-row">
-                                    <span class="detail-label">User:</span>
-                                    <span>driver@university.edu</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Issue:</span>
-                                    <span>GPS not updating</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Date:</span>
-                                    <span>Nov 5, 2025 - 09:15 AM</span>
-                                </div>
-                            </div>
-                            <div>
-                                <span class="status-badge approved">Resolved</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="newAdminEmail" placeholder="admin@amam.app" />
+              </div>
+
+              <div class="form-group">
+                <label>Role</label>
+                <select id="newAdminRole">
+                  <option value="admin">Full Administrator</option>
+                  <option value="moderator">Moderator</option>
+                  <option value="support">Tech Support Staff</option>
+                </select>
+              </div>
+
+              <button class="create-btn" onclick="createAdmin()">Create Admin Account</button>
             </div>
-        </div>
+          </div>
 
-        <!-- Admin Management Tab -->
-        <div id="adminsSection" class="tab-content">
-            <div class="admin-grid">
-                <div>
-                    <div class="admin-form">
-                        <h3 style="color: #1e40af; margin-bottom: 1.5rem;">Create New Admin Account</h3>
-                        
-                        <div class="form-group">
-                            <label>Username</label>
-                            <input type="text" id="newAdminUsername" placeholder="e.g., admin2">
-                        </div>
+          <div>
+            <div class="admin-list">
+              <h3 style="color: #1e40af; margin-bottom: 1.5rem">Current Admin Accounts</h3>
 
-                        <div class="form-group">
-                            <label>Password</label>
-                            <input type="password" id="newAdminPassword" placeholder="Strong password recommended">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" id="newAdminEmail" placeholder="admin@amam.app">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Role</label>
-                            <select id="newAdminRole">
-                                <option value="admin">Full Administrator</option>
-                                <option value="moderator">Moderator</option>
-                                <option value="support">Tech Support Staff</option>
-                            </select>
-                        </div>
-
-                        <button class="create-btn" onclick="createAdmin()">Create Admin Account</button>
-                    </div>
+              <div class="admin-item">
+                <div class="admin-info">
+                  <h4>admin</h4>
+                  <p>Primary Administrator (System Generated)</p>
                 </div>
+                <span class="status-badge approved" style="display: inline-block">Active</span>
+              </div>
 
-                <div>
-                    <div class="admin-list">
-                        <h3 style="color: #1e40af; margin-bottom: 1.5rem;">Current Admin Accounts</h3>
-                        
-                        <div class="admin-item">
-                            <div class="admin-info">
-                                <h4>admin</h4>
-                                <p>Primary Administrator (System Generated)</p>
-                            </div>
-                            <span class="status-badge approved" style="display: inline-block;">Active</span>
-                        </div>
-
-                        <div class="admin-item">
-                            <div class="admin-info">
-                                <h4>moderator</h4>
-                                <p>Moderator Account</p>
-                            </div>
-                            <button class="btn-remove">Remove</button>
-                        </div>
-
-                        <div class="admin-item">
-                            <div class="admin-info">
-                                <h4>support_team</h4>
-                                <p>Tech Support Staff</p>
-                            </div>
-                            <button class="btn-remove">Remove</button>
-                        </div>
-                    </div>
+              <div class="admin-item">
+                <div class="admin-info">
+                  <h4>moderator</h4>
+                  <p>Moderator Account</p>
                 </div>
+                <button class="btn-remove">Remove</button>
+              </div>
+
+              <div class="admin-item">
+                <div class="admin-info">
+                  <h4>support_team</h4>
+                  <p>Tech Support Staff</p>
+                </div>
+                <button class="btn-remove">Remove</button>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- Success Modal -->
-        <div id="successModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Success</h2>
-                <button class="close-btn" onclick="closeModal()">×</button>
-            </div>
-            <p id="successMessage" style="color: #475569; line-height: 1.6;"></p>
-            <button class="create-btn" style="margin-top: 1.5rem;" onclick="closeModal()">Close</button>
+    <div id="successModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Success</h2>
+          <button class="close-btn" onclick="closeModal()">×</button>
         </div>
+        <p id="successMessage" style="color: #475569; line-height: 1.6"></p>
+        <button class="create-btn" style="margin-top: 1.5rem" onclick="closeModal()">Close</button>
+      </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        // Helper to include admin credentials (local dev ADMIN_KEY or session token) on requests
-        function adminFetch(url, options = {}) {
-            options.headers = options.headers || {};
-            // Prefer explicit admin key stored in localStorage (for local dev)
-            const adminKey = localStorage.getItem('ADMIN_KEY');
-            if (adminKey) {
-                options.headers['x-admin-key'] = adminKey;
-            }
-            // Also attach Authorization if adminSession includes a token
-            try {
-                const adminSession = sessionStorage.getItem('adminSession');
-                if (adminSession) {
-                    const admin = JSON.parse(adminSession);
-                    if (admin && admin.token) options.headers['Authorization'] = 'Bearer ' + admin.token;
-                }
-            } catch (e) { /* ignore */ }
-            return fetch(url, options);
+      // Helper to include admin credentials (local dev ADMIN_KEY or session token) on requests
+      function adminFetch(url, options = {}) {
+        options.headers = options.headers || {};
+        // Prefer explicit admin key stored in localStorage (for local dev)
+        const adminKey = localStorage.getItem('ADMIN_KEY');
+        if (adminKey) {
+          options.headers['x-admin-key'] = adminKey;
         }
-
-        // Check admin session
-        window.addEventListener('DOMContentLoaded', () => {
-            const adminSession = sessionStorage.getItem('adminSession');
-            if (!adminSession) {
-                window.location.href = 'admin-login.html';
-                return;
-            }
-
+        // Also attach Authorization if adminSession includes a token
+        try {
+          const adminSession = sessionStorage.getItem('adminSession');
+          if (adminSession) {
             const admin = JSON.parse(adminSession);
-            document.getElementById('adminUsername').textContent = admin.username;
+            if (admin && admin.token) options.headers['Authorization'] = 'Bearer ' + admin.token;
+          }
+        } catch (e) {
+          /* ignore */
+        }
+        return fetch(url, options);
+      }
 
-            // Load pending driver applications for review
-            loadPendingApplications();
+      // Check admin session
+      window.addEventListener('DOMContentLoaded', () => {
+        const adminSession = sessionStorage.getItem('adminSession');
+        if (!adminSession) {
+          window.location.href = 'admin-login.html';
+          return;
+        }
 
-            // Wire up search filter
-            const searchPending = document.getElementById('searchPending');
-            if (searchPending) {
-                let debounce;
-                searchPending.addEventListener('input', (e) => {
-                    clearTimeout(debounce);
-                    debounce = setTimeout(() => {
-                        filterPending(e.target.value.trim().toLowerCase());
-                    }, 250);
-                });
-            }
+        const admin = JSON.parse(adminSession);
+        document.getElementById('adminUsername').textContent = admin.username;
+
+        // Load pending driver applications for review
+        loadPendingApplications();
+
+        // Wire up search filter
+        const searchPending = document.getElementById('searchPending');
+        if (searchPending) {
+          let debounce;
+          searchPending.addEventListener('input', (e) => {
+            clearTimeout(debounce);
+            debounce = setTimeout(() => {
+              filterPending(e.target.value.trim().toLowerCase());
+            }, 250);
+          });
+        }
+      });
+
+      // Navigation
+      function switchNav(section) {
+        document.querySelectorAll('[id$="Section"]').forEach((el) => {
+          el.classList.remove('active');
         });
+        document.getElementById(section + 'Section').classList.add('active');
 
-        // Navigation
-        function switchNav(section) {
-            document.querySelectorAll('[id$="Section"]').forEach(el => {
-                el.classList.remove('active');
-            });
-            document.getElementById(section + 'Section').classList.add('active');
+        document.querySelectorAll('.sidebar-nav a').forEach((a) => a.classList.remove('active'));
+        event.target.classList.add('active');
+      }
 
-            document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        // Driver Tab Switching
-        function switchDriverTab(tab) {
-            document.querySelectorAll('[id$="Tab"]').forEach(el => {
-                if (el.id.includes('Tab')) el.classList.remove('active');
-            });
-            document.getElementById(tab + 'Tab').classList.add('active');
-
-            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            // load tab-specific data
-            if (tab === 'approved') {
-                loadApprovedApplications();
-            }
-        }
-
-        // Announcements
-        function createAnnouncement() {
-            const type = document.getElementById('announcementType').value;
-            const title = document.getElementById('announcementTitle').value;
-            const message = document.getElementById('announcementMessage').value;
-            if (!title || !message) {
-                alert('Please fill in all fields');
-                return;
-            }
-
-            (async () => {
-                try {
-                    const adminSession = sessionStorage.getItem('adminSession');
-                    const admin = adminSession ? JSON.parse(adminSession) : {};
-                    const adminId = admin.id || admin.userId || null;
-                    const eventDate = document.getElementById('eventDate').value || null;
-
-                    const res = await adminFetch('/api/announcements', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title, message, type, eventDate, adminId })
-                    });
-                    if (!res.ok) {
-                        const err = await res.json().catch(()=>null);
-                        throw new Error((err && err.error) ? err.error : 'Server error');
-                    }
-                    const json = await res.json();
-
-                    showSuccess('Announcement posted successfully.');
-
-                    // Clear form
-                    document.getElementById('announcementTitle').value = '';
-                    document.getElementById('announcementMessage').value = '';
-                    document.getElementById('eventDate').value = '';
-
-                    // Optionally, refresh the recent announcements list in the admin UI
-                    if (typeof loadAdminAnnouncements === 'function') loadAdminAnnouncements();
-                } catch (e) {
-                    console.warn('createAnnouncement error', e);
-                    alert('Failed to create announcement: ' + (e.message || e));
-                }
-            })();
-        }
-
-        // Load announcements for the admin recent list
-        async function loadAdminAnnouncements() {
-            try {
-                const res = await adminFetch('/api/announcements');
-                if (!res.ok) {
-                    console.warn('/api/announcements returned', res.status);
-                    return;
-                }
-                const json = await res.json();
-                const list = json && json.announcements ? json.announcements : [];
-                const container = document.querySelector('#announcementsSection .announcements-list');
-                if (!container) return;
-                container.innerHTML = '';
-                for (const ann of list) {
-                    const item = document.createElement('div');
-                    item.className = 'announcement-item';
-                    const header = document.createElement('div');
-                    header.className = 'announcement-header';
-                    const left = document.createElement('div');
-                    const h = document.createElement('h4'); h.textContent = ann.title || '';
-                    const t = document.createElement('span'); t.className = 'announcement-type ' + (ann.type === 'event' ? 'event' : 'system'); t.textContent = ann.type === 'event' ? 'Event' : 'System';
-                    left.appendChild(h); left.appendChild(t);
-                    const date = document.createElement('span'); date.className = 'announcement-date'; date.textContent = ann.created_at ? new Date(ann.created_at).toLocaleString() : '';
-                    header.appendChild(left); header.appendChild(date);
-                    const p = document.createElement('p'); p.className = 'announcement-text'; p.textContent = ann.message || '';
-                    const actions = document.createElement('div'); actions.className = 'announcement-actions';
-                    const btnEdit = document.createElement('button'); btnEdit.className = 'btn-edit'; btnEdit.textContent = 'Edit';
-                    const btnDelete = document.createElement('button'); btnDelete.className = 'btn-delete'; btnDelete.textContent = 'Delete';
-                    // Wire buttons
-                    btnEdit.onclick = () => editAnnouncement(ann.id);
-                    btnDelete.onclick = () => deleteAnnouncement(ann.id);
-                    actions.appendChild(btnEdit); actions.appendChild(btnDelete);
-                    item.appendChild(header); item.appendChild(p); item.appendChild(actions);
-                    container.appendChild(item);
-                }
-            } catch (e) {
-                console.warn('loadAdminAnnouncements error', e);
-            }
-        }
-
-        // Edit an announcement (simple prompt-based editor)
-        async function editAnnouncement(id) {
-            try {
-                // Fetch the current announcement so we can prefill prompts
-                const res0 = await adminFetch('/api/announcements');
-                const json0 = await res0.json();
-                const ann = (json0.announcements || []).find(a => String(a.id) === String(id));
-                if (!ann) return alert('Announcement not found');
-
-                const newTitle = prompt('Edit title:', ann.title || '');
-                if (newTitle === null) return; // cancelled
-                const newMessage = prompt('Edit message:', ann.message || '');
-                if (newMessage === null) return;
-                const datePrompt = prompt('Event date/time (ISO) or leave blank:', ann.event_date || '');
-                const payload = { title: newTitle, message: newMessage, eventDate: datePrompt || null };
-
-                const res = await adminFetch('/api/announcements/' + encodeURIComponent(id), {
-                    method: 'PUT',
-                    headers: Object.assign({'Content-Type':'application/json'}, {}),
-                    body: JSON.stringify(payload)
-                });
-                if (!res.ok) {
-                    const err = await res.json().catch(()=>null);
-                    throw new Error((err && err.error) ? err.error : 'Server error');
-                }
-                showSuccess('Announcement updated');
-                await loadAdminAnnouncements();
-            } catch (e) {
-                console.warn('editAnnouncement error', e);
-                alert('Failed to update announcement: ' + (e.message || e));
-            }
-        }
-
-        // Delete announcement with confirmation
-        async function deleteAnnouncement(id) {
-            try {
-                if (!confirm('Delete this announcement?')) return;
-                const res = await adminFetch('/api/announcements/' + encodeURIComponent(id), { method: 'DELETE' });
-                if (!res.ok) {
-                    const err = await res.json().catch(()=>null);
-                    throw new Error((err && err.error) ? err.error : 'Server error');
-                }
-                showSuccess('Announcement deleted');
-                await loadAdminAnnouncements();
-            } catch (e) {
-                console.warn('deleteAnnouncement error', e);
-                alert('Failed to delete announcement: ' + (e.message || e));
-            }
-        }
-
-        // Ensure admin announcements load when the page is ready
-        document.addEventListener('DOMContentLoaded', () => {
-            try { loadAdminAnnouncements(); } catch (e) { console.warn('Initial loadAdminAnnouncements failed', e); }
-            // Connect Socket.IO for admin real-time events (emergencies)
-            try {
-                const socket = io();
-                // Wait for socket connection before joining admins room
-                socket.on('connect', () => {
-                    try {
-                        const adminKey = localStorage.getItem('ADMIN_KEY');
-                        const adminSession = sessionStorage.getItem('adminSession');
-                        let token = null;
-                        try { token = adminSession ? JSON.parse(adminSession).token : null; } catch (e) { token = null; }
-                        if (adminKey) socket.emit('adminJoin', { adminKey });
-                        else if (token) socket.emit('adminJoin', token);
-                        else socket.emit('adminJoin');
-                    } catch (e) { console.warn('adminJoin emit failed', e); }
-                });
-
-                socket.on('emergencyAlert', (payload) => {
-                    try {
-                        if (!payload) return;
-                        const list = document.getElementById('emergencyList');
-                        if (!list) return;
-                        // Clear placeholder if present
-                        if (list.children.length === 1 && list.children[0].textContent.includes('No active emergencies')) {
-                            list.innerHTML = '';
-                        }
-
-                        const item = document.createElement('div');
-                        item.className = 'announcement-item';
-                        const header = document.createElement('div'); header.className = 'announcement-header';
-                        const left = document.createElement('div');
-                        const h = document.createElement('h4'); h.textContent = payload.message || 'Emergency Alert';
-                        left.appendChild(h);
-                        const date = document.createElement('span'); date.className = 'announcement-date'; date.textContent = new Date(payload.timestamp || Date.now()).toLocaleString();
-                        header.appendChild(left); header.appendChild(date);
-                        const p = document.createElement('p'); p.className = 'announcement-text'; p.textContent = 'From User: ' + (payload.fromUserId || 'Unknown') + (payload.location ? (' — ' + JSON.stringify(payload.location)) : '');
-
-                        const actions = document.createElement('div'); actions.className = 'announcement-actions';
-                        const ack = document.createElement('button'); ack.className = 'btn-edit'; ack.textContent = 'Acknowledge';
-                        ack.onclick = () => { item.remove(); };
-                        actions.appendChild(ack);
-
-                        item.appendChild(header); item.appendChild(p); item.appendChild(actions);
-                        list.prepend(item);
-                    } catch (e) { console.warn('Error rendering emergencyAlert', e); }
-                });
-            } catch (e) { console.warn('Admin socket setup failed', e); }
+      // Driver Tab Switching
+      function switchDriverTab(tab) {
+        document.querySelectorAll('[id$="Tab"]').forEach((el) => {
+          if (el.id.includes('Tab')) el.classList.remove('active');
         });
+        document.getElementById(tab + 'Tab').classList.add('active');
 
-        // Tech Support Toggle
-        function toggleTechSupport() {
-            const toggle = event.target.closest('.toggle-switch');
-            toggle.classList.toggle('active');
-            const isActive = toggle.classList.contains('active');
-            showSuccess('Tech Support Service ' + (isActive ? 'Enabled' : 'Disabled'));
+        document.querySelectorAll('.tabs .tab').forEach((t) => t.classList.remove('active'));
+        event.target.classList.add('active');
+        // load tab-specific data
+        if (tab === 'approved') {
+          loadApprovedApplications();
+        }
+      }
+
+      // Announcements
+      function createAnnouncement() {
+        const type = document.getElementById('announcementType').value;
+        const title = document.getElementById('announcementTitle').value;
+        const message = document.getElementById('announcementMessage').value;
+        if (!title || !message) {
+          alert('Please fill in all fields');
+          return;
         }
 
-        // Driver Verification
-        // Approve driver: calls backend and refreshes list on success
-        async function approveDriver(id) {
-            if (!confirm('Approve this driver application?')) return;
-            try {
-                const adminSession = sessionStorage.getItem('adminSession');
-                const admin = adminSession ? JSON.parse(adminSession) : {};
-                const adminId = admin.id || admin.userId || admin.adminId || null;
+        (async () => {
+          try {
+            const adminSession = sessionStorage.getItem('adminSession');
+            const admin = adminSession ? JSON.parse(adminSession) : {};
+            const adminId = admin.id || admin.userId || null;
+            const eventDate = document.getElementById('eventDate').value || null;
 
-                const res = await adminFetch('/api/admin/review-driver', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ applicationId: id, adminId, approved: true, reason: null })
-                });
-                if (!res.ok) {
-                    const text = await res.text();
-                    throw new Error(text || 'Server error');
-                }
-                showSuccess('Driver application #' + id + ' has been approved!');
-                await loadPendingApplications();
-                await refreshStats();
-            } catch (err) {
-                alert('Failed to approve application: ' + (err.message || err));
+            const res = await adminFetch('/api/announcements', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ title, message, type, eventDate, adminId }),
+            });
+            if (!res.ok) {
+              const err = await res.json().catch(() => null);
+              throw new Error(err && err.error ? err.error : 'Server error');
             }
-        }
+            const json = await res.json();
 
-        // Reject driver: prompt for reason, send to backend, refresh on success
-        async function rejectDriver(id) {
-            const reason = prompt('Enter rejection reason:');
-            if (!reason) return;
+            showSuccess('Announcement posted successfully.');
+
+            // Clear form
+            document.getElementById('announcementTitle').value = '';
+            document.getElementById('announcementMessage').value = '';
+            document.getElementById('eventDate').value = '';
+
+            // Optionally, refresh the recent announcements list in the admin UI
+            if (typeof loadAdminAnnouncements === 'function') loadAdminAnnouncements();
+          } catch (e) {
+            console.warn('createAnnouncement error', e);
+            alert('Failed to create announcement: ' + (e.message || e));
+          }
+        })();
+      }
+
+      // Load announcements for the admin recent list
+      async function loadAdminAnnouncements() {
+        try {
+          const res = await adminFetch('/api/announcements');
+          if (!res.ok) {
+            console.warn('/api/announcements returned', res.status);
+            return;
+          }
+          const json = await res.json();
+          const list = json && json.announcements ? json.announcements : [];
+          const container = document.querySelector('#announcementsSection .announcements-list');
+          if (!container) return;
+          container.innerHTML = '';
+          for (const ann of list) {
+            const item = document.createElement('div');
+            item.className = 'announcement-item';
+            const header = document.createElement('div');
+            header.className = 'announcement-header';
+            const left = document.createElement('div');
+            const h = document.createElement('h4');
+            h.textContent = ann.title || '';
+            const t = document.createElement('span');
+            t.className = 'announcement-type ' + (ann.type === 'event' ? 'event' : 'system');
+            t.textContent = ann.type === 'event' ? 'Event' : 'System';
+            left.appendChild(h);
+            left.appendChild(t);
+            const date = document.createElement('span');
+            date.className = 'announcement-date';
+            date.textContent = ann.created_at ? new Date(ann.created_at).toLocaleString() : '';
+            header.appendChild(left);
+            header.appendChild(date);
+            const p = document.createElement('p');
+            p.className = 'announcement-text';
+            p.textContent = ann.message || '';
+            const actions = document.createElement('div');
+            actions.className = 'announcement-actions';
+            const btnEdit = document.createElement('button');
+            btnEdit.className = 'btn-edit';
+            btnEdit.textContent = 'Edit';
+            const btnDelete = document.createElement('button');
+            btnDelete.className = 'btn-delete';
+            btnDelete.textContent = 'Delete';
+            // Wire buttons
+            btnEdit.onclick = () => editAnnouncement(ann.id);
+            btnDelete.onclick = () => deleteAnnouncement(ann.id);
+            actions.appendChild(btnEdit);
+            actions.appendChild(btnDelete);
+            item.appendChild(header);
+            item.appendChild(p);
+            item.appendChild(actions);
+            container.appendChild(item);
+          }
+        } catch (e) {
+          console.warn('loadAdminAnnouncements error', e);
+        }
+      }
+
+      // Edit an announcement (simple prompt-based editor)
+      async function editAnnouncement(id) {
+        try {
+          // Fetch the current announcement so we can prefill prompts
+          const res0 = await adminFetch('/api/announcements');
+          const json0 = await res0.json();
+          const ann = (json0.announcements || []).find((a) => String(a.id) === String(id));
+          if (!ann) return alert('Announcement not found');
+
+          const newTitle = prompt('Edit title:', ann.title || '');
+          if (newTitle === null) return; // cancelled
+          const newMessage = prompt('Edit message:', ann.message || '');
+          if (newMessage === null) return;
+          const datePrompt = prompt('Event date/time (ISO) or leave blank:', ann.event_date || '');
+          const payload = { title: newTitle, message: newMessage, eventDate: datePrompt || null };
+
+          const res = await adminFetch('/api/announcements/' + encodeURIComponent(id), {
+            method: 'PUT',
+            headers: Object.assign({ 'Content-Type': 'application/json' }, {}),
+            body: JSON.stringify(payload),
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => null);
+            throw new Error(err && err.error ? err.error : 'Server error');
+          }
+          showSuccess('Announcement updated');
+          await loadAdminAnnouncements();
+        } catch (e) {
+          console.warn('editAnnouncement error', e);
+          alert('Failed to update announcement: ' + (e.message || e));
+        }
+      }
+
+      // Delete announcement with confirmation
+      async function deleteAnnouncement(id) {
+        try {
+          if (!confirm('Delete this announcement?')) return;
+          const res = await adminFetch('/api/announcements/' + encodeURIComponent(id), {
+            method: 'DELETE',
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => null);
+            throw new Error(err && err.error ? err.error : 'Server error');
+          }
+          showSuccess('Announcement deleted');
+          await loadAdminAnnouncements();
+        } catch (e) {
+          console.warn('deleteAnnouncement error', e);
+          alert('Failed to delete announcement: ' + (e.message || e));
+        }
+      }
+
+      // Ensure admin announcements load when the page is ready
+      document.addEventListener('DOMContentLoaded', () => {
+        try {
+          loadAdminAnnouncements();
+        } catch (e) {
+          console.warn('Initial loadAdminAnnouncements failed', e);
+        }
+        // Connect Socket.IO for admin real-time events (emergencies)
+        try {
+          const socket = io();
+          // Wait for socket connection before joining admins room
+          socket.on('connect', () => {
             try {
-                const adminSession = sessionStorage.getItem('adminSession');
-                const admin = adminSession ? JSON.parse(adminSession) : {};
-                const adminId = admin.id || admin.userId || admin.adminId || null;
-
-                const res = await adminFetch('/api/admin/review-driver', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ applicationId: id, adminId, approved: false, reason })
-                });
-                if (!res.ok) {
-                    const text = await res.text();
-                    throw new Error(text || 'Server error');
-                }
-                showSuccess('Driver application #' + id + ' has been rejected.\n\nReason: ' + reason);
-                await loadPendingApplications();
-                await refreshStats();
-            } catch (err) {
-                alert('Failed to reject application: ' + (err.message || err));
+              const adminKey = localStorage.getItem('ADMIN_KEY');
+              const adminSession = sessionStorage.getItem('adminSession');
+              let token = null;
+              try {
+                token = adminSession ? JSON.parse(adminSession).token : null;
+              } catch (e) {
+                token = null;
+              }
+              if (adminKey) socket.emit('adminJoin', { adminKey });
+              else if (token) socket.emit('adminJoin', token);
+              else socket.emit('adminJoin');
+            } catch (e) {
+              console.warn('adminJoin emit failed', e);
             }
-        }
+          });
 
-        // Fetch pending driver applications and render them
-        async function loadPendingApplications() {
-            const container = document.getElementById('pendingGrid');
-            container.innerHTML = '<div class="empty-state">Loading pending applications...</div>';
+          socket.on('emergencyAlert', (payload) => {
             try {
-                const res = await adminFetch('/api/admin/pending-drivers');
-                if (!res.ok) throw new Error('Failed to fetch pending drivers');
-                const data = await res.json();
-                const apps = Array.isArray(data.applications) ? data.applications : [];
+              if (!payload) return;
+              const list = document.getElementById('emergencyList');
+              if (!list) return;
+              // Clear placeholder if present
+              if (
+                list.children.length === 1 &&
+                list.children[0].textContent.includes('No active emergencies')
+              ) {
+                list.innerHTML = '';
+              }
 
-                // update stats
-                const pendingCount = apps.length;
-                const pendingEl = document.getElementById('pendingDrivers');
-                if (pendingEl) pendingEl.textContent = pendingCount;
-                const tabPending = document.getElementById('tabPendingCount');
-                if (tabPending) tabPending.textContent = pendingCount;
+              const item = document.createElement('div');
+              item.className = 'announcement-item';
+              const header = document.createElement('div');
+              header.className = 'announcement-header';
+              const left = document.createElement('div');
+              const h = document.createElement('h4');
+              h.textContent = payload.message || 'Emergency Alert';
+              left.appendChild(h);
+              const date = document.createElement('span');
+              date.className = 'announcement-date';
+              date.textContent = new Date(payload.timestamp || Date.now()).toLocaleString();
+              header.appendChild(left);
+              header.appendChild(date);
+              const p = document.createElement('p');
+              p.className = 'announcement-text';
+              p.textContent =
+                'From User: ' +
+                (payload.fromUserId || 'Unknown') +
+                (payload.location ? ' — ' + JSON.stringify(payload.location) : '');
 
-                if (apps.length === 0) {
-                    container.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><h3>No pending applications</h3><p>All caught up — no pending driver applications.</p></div>';
-                    // still refresh the overall stats
-                    await refreshStats();
-                    return;
-                }
+              const actions = document.createElement('div');
+              actions.className = 'announcement-actions';
+              const ack = document.createElement('button');
+              ack.className = 'btn-edit';
+              ack.textContent = 'Acknowledge';
+              ack.onclick = () => {
+                item.remove();
+              };
+              actions.appendChild(ack);
 
-                container.innerHTML = '';
-                apps.forEach(app => {
-                    container.insertAdjacentHTML('beforeend', renderApplication(app));
-                });
-
-                // refresh overall stats (approved/rejected counts)
-                await refreshStats();
-            } catch (err) {
-                container.innerHTML = '<div class="empty-state"><h3>Error loading applications</h3><p>' + err.message + '</p></div>';
+              item.appendChild(header);
+              item.appendChild(p);
+              item.appendChild(actions);
+              list.prepend(item);
+            } catch (e) {
+              console.warn('Error rendering emergencyAlert', e);
             }
+          });
+        } catch (e) {
+          console.warn('Admin socket setup failed', e);
         }
+      });
 
-        // Fetch approved driver applications and render them
-        async function loadApprovedApplications() {
-            const container = document.getElementById('approvedGrid');
-            if (!container) return;
-            container.innerHTML = '<div class="empty-state">Loading approved drivers...</div>';
-            try {
-                const res = await adminFetch('/api/admin/approved-drivers');
-                if (!res.ok) throw new Error('Failed to fetch approved drivers');
-                const data = await res.json();
-                const apps = Array.isArray(data.applications) ? data.applications : [];
+      // Tech Support Toggle
+      function toggleTechSupport() {
+        const toggle = event.target.closest('.toggle-switch');
+        toggle.classList.toggle('active');
+        const isActive = toggle.classList.contains('active');
+        showSuccess('Tech Support Service ' + (isActive ? 'Enabled' : 'Disabled'));
+      }
 
-                const approvedCountEl = document.getElementById('approvedDrivers');
-                if (approvedCountEl) approvedCountEl.textContent = apps.length;
+      // Driver Verification
+      // Approve driver: calls backend and refreshes list on success
+      async function approveDriver(id) {
+        if (!confirm('Approve this driver application?')) return;
+        try {
+          const adminSession = sessionStorage.getItem('adminSession');
+          const admin = adminSession ? JSON.parse(adminSession) : {};
+          const adminId = admin.id || admin.userId || admin.adminId || null;
 
-                if (apps.length === 0) {
-                    container.innerHTML = '<div class="empty-state"><h3>No approved drivers</h3><p>No drivers have been approved yet.</p></div>';
-                    return;
-                }
-
-                container.innerHTML = '';
-                apps.forEach(app => {
-                    container.insertAdjacentHTML('beforeend', renderApprovedCard(app));
-                });
-            } catch (err) {
-                container.innerHTML = '<div class="empty-state"><h3>Error loading approved drivers</h3><p>' + (err.message || err) + '</p></div>';
-            }
+          const res = await adminFetch('/api/admin/review-driver', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ applicationId: id, adminId, approved: true, reason: null }),
+          });
+          if (!res.ok) {
+            const text = await res.text();
+            throw new Error(text || 'Server error');
+          }
+          showSuccess('Driver application #' + id + ' has been approved!');
+          await loadPendingApplications();
+          await refreshStats();
+        } catch (err) {
+          alert('Failed to approve application: ' + (err.message || err));
         }
+      }
 
-        function renderApprovedCard(app) {
-            const id = app.id || app._id || app.applicationId || 'unknown';
-            const name = escapeHtml(app.username || app.name || 'Unknown');
-            const email = escapeHtml(app.email || '');
-            const vehicle = escapeHtml((app.vehicle_make ? (app.vehicle_make + ' ' + (app.vehicle_model||'')) : app.vehicle) || 'Not provided');
-            const approvedAt = app.reviewed_at ? new Date(app.reviewed_at).toLocaleString() : (app.reviewedAt ? new Date(app.reviewedAt).toLocaleString() : 'Unknown');
+      // Reject driver: prompt for reason, send to backend, refresh on success
+      async function rejectDriver(id) {
+        const reason = prompt('Enter rejection reason:');
+        if (!reason) return;
+        try {
+          const adminSession = sessionStorage.getItem('adminSession');
+          const admin = adminSession ? JSON.parse(adminSession) : {};
+          const adminId = admin.id || admin.userId || admin.adminId || null;
 
-            return `
+          const res = await adminFetch('/api/admin/review-driver', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ applicationId: id, adminId, approved: false, reason }),
+          });
+          if (!res.ok) {
+            const text = await res.text();
+            throw new Error(text || 'Server error');
+          }
+          showSuccess('Driver application #' + id + ' has been rejected.\n\nReason: ' + reason);
+          await loadPendingApplications();
+          await refreshStats();
+        } catch (err) {
+          alert('Failed to reject application: ' + (err.message || err));
+        }
+      }
+
+      // Fetch pending driver applications and render them
+      async function loadPendingApplications() {
+        const container = document.getElementById('pendingGrid');
+        container.innerHTML = '<div class="empty-state">Loading pending applications...</div>';
+        try {
+          const res = await adminFetch('/api/admin/pending-drivers');
+          if (!res.ok) throw new Error('Failed to fetch pending drivers');
+          const data = await res.json();
+          const apps = Array.isArray(data.applications) ? data.applications : [];
+
+          // update stats
+          const pendingCount = apps.length;
+          const pendingEl = document.getElementById('pendingDrivers');
+          if (pendingEl) pendingEl.textContent = pendingCount;
+          const tabPending = document.getElementById('tabPendingCount');
+          if (tabPending) tabPending.textContent = pendingCount;
+
+          if (apps.length === 0) {
+            container.innerHTML =
+              '<div class="empty-state"><div class="empty-icon"></div><h3>No pending applications</h3><p>All caught up — no pending driver applications.</p></div>';
+            // still refresh the overall stats
+            await refreshStats();
+            return;
+          }
+
+          container.innerHTML = '';
+          apps.forEach((app) => {
+            container.insertAdjacentHTML('beforeend', renderApplication(app));
+          });
+
+          // refresh overall stats (approved/rejected counts)
+          await refreshStats();
+        } catch (err) {
+          container.innerHTML =
+            '<div class="empty-state"><h3>Error loading applications</h3><p>' +
+            err.message +
+            '</p></div>';
+        }
+      }
+
+      // Fetch approved driver applications and render them
+      async function loadApprovedApplications() {
+        const container = document.getElementById('approvedGrid');
+        if (!container) return;
+        container.innerHTML = '<div class="empty-state">Loading approved drivers...</div>';
+        try {
+          const res = await adminFetch('/api/admin/approved-drivers');
+          if (!res.ok) throw new Error('Failed to fetch approved drivers');
+          const data = await res.json();
+          const apps = Array.isArray(data.applications) ? data.applications : [];
+
+          const approvedCountEl = document.getElementById('approvedDrivers');
+          if (approvedCountEl) approvedCountEl.textContent = apps.length;
+
+          if (apps.length === 0) {
+            container.innerHTML =
+              '<div class="empty-state"><h3>No approved drivers</h3><p>No drivers have been approved yet.</p></div>';
+            return;
+          }
+
+          container.innerHTML = '';
+          apps.forEach((app) => {
+            container.insertAdjacentHTML('beforeend', renderApprovedCard(app));
+          });
+        } catch (err) {
+          container.innerHTML =
+            '<div class="empty-state"><h3>Error loading approved drivers</h3><p>' +
+            (err.message || err) +
+            '</p></div>';
+        }
+      }
+
+      function renderApprovedCard(app) {
+        const id = app.id || app._id || app.applicationId || 'unknown';
+        const name = escapeHtml(app.username || app.name || 'Unknown');
+        const email = escapeHtml(app.email || '');
+        const vehicle = escapeHtml(
+          (app.vehicle_make ? app.vehicle_make + ' ' + (app.vehicle_model || '') : app.vehicle) ||
+            'Not provided'
+        );
+        const approvedAt = app.reviewed_at
+          ? new Date(app.reviewed_at).toLocaleString()
+          : app.reviewedAt
+            ? new Date(app.reviewedAt).toLocaleString()
+            : 'Unknown';
+
+        return `
                 <div class="verification-card">
                     <div class="verification-header">
                         <div class="user-details">
@@ -1436,66 +1581,71 @@
                     </div>
                 </div>
             `;
+      }
+
+      // View approved driver's profile/app details
+      async function viewApproved(userId) {
+        if (!userId) return alert('User ID not available');
+        try {
+          const res = await fetch('/api/driver-application/' + encodeURIComponent(userId));
+          if (!res.ok) throw new Error('Failed to fetch application');
+          const data = await res.json();
+          const pretty = JSON.stringify(data, null, 2);
+          document.getElementById('modalTitle').textContent = 'Approved Driver Details';
+          document.getElementById('modalContent').textContent = pretty;
+          openModal();
+        } catch (err) {
+          alert('Failed to load profile: ' + (err.message || err));
         }
+      }
 
-        // View approved driver's profile/app details
-        async function viewApproved(userId) {
-            if (!userId) return alert('User ID not available');
-            try {
-                const res = await fetch('/api/driver-application/' + encodeURIComponent(userId));
-                if (!res.ok) throw new Error('Failed to fetch application');
-                const data = await res.json();
-                const pretty = JSON.stringify(data, null, 2);
-                document.getElementById('modalTitle').textContent = 'Approved Driver Details';
-                document.getElementById('modalContent').textContent = pretty;
-                openModal();
-            } catch (err) {
-                alert('Failed to load profile: ' + (err.message || err));
-            }
+      // Fetch and update dashboard stats from server
+      async function refreshStats() {
+        try {
+          const res = await adminFetch('/api/admin/stats');
+          if (!res.ok) throw new Error('Failed to fetch stats');
+          const data = await res.json();
+          const s = data.stats || {};
+
+          const pendingDrivers = s.pending_drivers || 0;
+          const approvedDrivers = s.approved_drivers || 0;
+
+          const pendingEl = document.getElementById('pendingDrivers');
+          if (pendingEl) pendingEl.textContent = pendingDrivers;
+          const tabPending = document.getElementById('tabPendingCount');
+          if (tabPending) tabPending.textContent = pendingDrivers;
+
+          const approvedCard = document.getElementById('approvedDrivers');
+          if (approvedCard) approvedCard.textContent = approvedDrivers;
+          const approvedHeader = document.getElementById('approvedDriversHeader');
+          if (approvedHeader) approvedHeader.textContent = approvedDrivers;
+          const tabApproved = document.getElementById('tabApprovedCount');
+          if (tabApproved) tabApproved.textContent = approvedDrivers;
+
+          // rejected count isn't provided by /api/admin/stats; leave tabRejected as-is or set to 0
+          const tabRejected = document.getElementById('tabRejectedCount');
+          if (tabRejected && s.rejected_drivers !== undefined)
+            tabRejected.textContent = s.rejected_drivers;
+        } catch (err) {
+          console.warn('Failed to refresh stats:', err.message || err);
         }
+      }
 
-        // Fetch and update dashboard stats from server
-        async function refreshStats() {
-            try {
-                const res = await adminFetch('/api/admin/stats');
-                if (!res.ok) throw new Error('Failed to fetch stats');
-                const data = await res.json();
-                const s = data.stats || {};
+      // Render a single application card HTML string
+      function renderApplication(app) {
+        // app should include id, name, email, licenseNumber, vehicle, appliedAt, attachments (optional)
+        const id = app.id || app._id || app.applicationId || 'unknown';
+        const name = escapeHtml(app.name || app.fullName || app.username || 'Unknown');
+        const email = escapeHtml(app.email || '');
+        const license = escapeHtml(app.licenseNumber || app.license || 'Not provided');
+        const vehicle = escapeHtml(app.vehicle || app.vehicleInfo || 'Not provided');
+        const appliedAt = app.appliedAt
+          ? new Date(app.appliedAt).toLocaleString()
+          : app.createdAt
+            ? new Date(app.createdAt).toLocaleString()
+            : 'Unknown';
 
-                const pendingDrivers = s.pending_drivers || 0;
-                const approvedDrivers = s.approved_drivers || 0;
-
-                const pendingEl = document.getElementById('pendingDrivers');
-                if (pendingEl) pendingEl.textContent = pendingDrivers;
-                const tabPending = document.getElementById('tabPendingCount');
-                if (tabPending) tabPending.textContent = pendingDrivers;
-
-                const approvedCard = document.getElementById('approvedDrivers');
-                if (approvedCard) approvedCard.textContent = approvedDrivers;
-                const approvedHeader = document.getElementById('approvedDriversHeader');
-                if (approvedHeader) approvedHeader.textContent = approvedDrivers;
-                const tabApproved = document.getElementById('tabApprovedCount');
-                if (tabApproved) tabApproved.textContent = approvedDrivers;
-
-                // rejected count isn't provided by /api/admin/stats; leave tabRejected as-is or set to 0
-                const tabRejected = document.getElementById('tabRejectedCount');
-                if (tabRejected && (s.rejected_drivers !== undefined)) tabRejected.textContent = s.rejected_drivers;
-            } catch (err) {
-                console.warn('Failed to refresh stats:', err.message || err);
-            }
-        }
-
-        // Render a single application card HTML string
-        function renderApplication(app) {
-            // app should include id, name, email, licenseNumber, vehicle, appliedAt, attachments (optional)
-            const id = app.id || app._id || app.applicationId || 'unknown';
-            const name = escapeHtml(app.name || app.fullName || app.username || 'Unknown');
-            const email = escapeHtml(app.email || '');
-            const license = escapeHtml(app.licenseNumber || app.license || 'Not provided');
-            const vehicle = escapeHtml(app.vehicle || app.vehicleInfo || 'Not provided');
-            const appliedAt = app.appliedAt ? new Date(app.appliedAt).toLocaleString() : (app.createdAt ? new Date(app.createdAt).toLocaleString() : 'Unknown');
-
-            return `
+        return `
                 <div class="verification-card" id="app-${id}" data-user-id="${app.user_id || app.userId || ''}">
                     <div class="verification-header">
                         <div class="user-details">
@@ -1516,101 +1666,112 @@
                     </div>
                 </div>
             `;
+      }
+
+      // Simple HTML escaper to avoid injecting raw values
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      // View application details - opens modal with JSON for now
+      async function viewApplication(id) {
+        try {
+          // Our server exposes application details by user id at /api/driver-application/:userId
+          // The renderApplication includes the application id, but the server stored user_id as `user_id`.
+          // Fetch the pending drivers list and find the matching application to obtain user_id.
+          const resList = await fetch('/api/admin/pending-drivers');
+          if (!resList.ok) throw new Error('Failed to fetch list');
+          const jsonList = await resList.json();
+          const found = (jsonList.applications || []).find((a) => String(a.id) === String(id));
+          const userId = found ? found.user_id || found.userId : null;
+
+          if (!userId) throw new Error('Cannot determine user id for application');
+
+          const res = await fetch('/api/driver-application/' + encodeURIComponent(userId));
+          if (!res.ok) throw new Error('Failed to fetch application details');
+          const app = await res.json();
+          const pretty = JSON.stringify(app, null, 2);
+          showSuccess('Application Details:\n\n' + pretty);
+        } catch (err) {
+          alert('Failed to load application details: ' + err.message);
+        }
+      }
+
+      // Client-side filter of rendered pending applications
+      function filterPending(query) {
+        const cards = Array.from(document.querySelectorAll('#pendingGrid .verification-card'));
+        if (!query) {
+          cards.forEach((c) => (c.style.display = 'block'));
+          return;
+        }
+        cards.forEach((card) => {
+          const text = card.textContent.toLowerCase();
+          card.style.display = text.includes(query) ? 'block' : 'none';
+        });
+      }
+
+      // Admin Management
+      function createAdmin() {
+        const username = document.getElementById('newAdminUsername').value;
+        const password = document.getElementById('newAdminPassword').value;
+        const email = document.getElementById('newAdminEmail').value;
+        const role = document.getElementById('newAdminRole').value;
+
+        if (!username || !password || !email) {
+          alert('Please fill in all fields');
+          return;
         }
 
-        // Simple HTML escaper to avoid injecting raw values
-        function escapeHtml(str) {
-            if (!str) return '';
-            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        // Store new admin
+        let admins = JSON.parse(localStorage.getItem('adminCredentials') || '[]');
+        admins.push({
+          username: username,
+          password: password,
+        });
+        localStorage.setItem('adminCredentials', JSON.stringify(admins));
+
+        showSuccess(
+          'Admin account created successfully.\n\nUsername: ' +
+            username +
+            '\nRole: ' +
+            role +
+            '\n\nShare these credentials securely with the new administrator.'
+        );
+
+        // Clear form
+        document.getElementById('newAdminUsername').value = '';
+        document.getElementById('newAdminPassword').value = '';
+        document.getElementById('newAdminEmail').value = '';
+      }
+
+      // Modal Functions
+      function showSuccess(message) {
+        document.getElementById('successMessage').textContent = message;
+        document.getElementById('successModal').classList.add('active');
+      }
+
+      function closeModal() {
+        document.getElementById('successModal').classList.remove('active');
+      }
+
+      function logout() {
+        sessionStorage.clear();
+        window.location.href = 'admin-login.html';
+      }
+
+      // Close modal on outside click
+      window.onclick = function (event) {
+        const modal = document.getElementById('successModal');
+        if (event.target === modal) {
+          closeModal();
         }
-
-        // View application details - opens modal with JSON for now
-            async function viewApplication(id) {
-                try {
-                    // Our server exposes application details by user id at /api/driver-application/:userId
-                    // The renderApplication includes the application id, but the server stored user_id as `user_id`.
-                    // Fetch the pending drivers list and find the matching application to obtain user_id.
-                    const resList = await fetch('/api/admin/pending-drivers');
-                    if (!resList.ok) throw new Error('Failed to fetch list');
-                    const jsonList = await resList.json();
-                    const found = (jsonList.applications || []).find(a => String(a.id) === String(id));
-                    const userId = found ? (found.user_id || found.userId) : null;
-
-                    if (!userId) throw new Error('Cannot determine user id for application');
-
-                    const res = await fetch('/api/driver-application/' + encodeURIComponent(userId));
-                    if (!res.ok) throw new Error('Failed to fetch application details');
-                    const app = await res.json();
-                    const pretty = JSON.stringify(app, null, 2);
-                    showSuccess('Application Details:\n\n' + pretty);
-                } catch (err) {
-                    alert('Failed to load application details: ' + err.message);
-                }
-            }
-
-        // Client-side filter of rendered pending applications
-        function filterPending(query) {
-            const cards = Array.from(document.querySelectorAll('#pendingGrid .verification-card'));
-            if (!query) {
-                cards.forEach(c => c.style.display = 'block');
-                return;
-            }
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                card.style.display = text.includes(query) ? 'block' : 'none';
-            });
-        }
-
-        // Admin Management
-        function createAdmin() {
-            const username = document.getElementById('newAdminUsername').value;
-            const password = document.getElementById('newAdminPassword').value;
-            const email = document.getElementById('newAdminEmail').value;
-            const role = document.getElementById('newAdminRole').value;
-
-            if (!username || !password || !email) {
-                alert('Please fill in all fields');
-                return;
-            }
-
-            // Store new admin
-            let admins = JSON.parse(localStorage.getItem('adminCredentials') || '[]');
-            admins.push({
-                username: username,
-                password: password
-            });
-            localStorage.setItem('adminCredentials', JSON.stringify(admins));
-
-            showSuccess('Admin account created successfully.\n\nUsername: ' + username + '\nRole: ' + role + '\n\nShare these credentials securely with the new administrator.');
-
-            // Clear form
-            document.getElementById('newAdminUsername').value = '';
-            document.getElementById('newAdminPassword').value = '';
-            document.getElementById('newAdminEmail').value = '';
-        }
-
-        // Modal Functions
-        function showSuccess(message) {
-            document.getElementById('successMessage').textContent = message;
-            document.getElementById('successModal').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('successModal').classList.remove('active');
-        }
-
-        function logout() {
-            sessionStorage.clear();
-            window.location.href = 'admin-login.html';
-        }
-
-        // Close modal on outside click
-        window.onclick = function(event) {
-            const modal = document.getElementById('successModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
+      };
     </script>
-</body>
+  </body>
 </html>

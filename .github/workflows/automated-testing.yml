@@ -2,9 +2,9 @@ name: Automated Testing
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   automated-testing:
@@ -49,5 +49,3 @@ jobs:
           path: |
             server.log
             bookings_results.log
-
-            

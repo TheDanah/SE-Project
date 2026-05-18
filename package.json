@@ -8,7 +8,11 @@
     "dev": "nodemon server.js",
     "init-db": "node init-database.js",
     "functional-test": "node scripts/functional_test.js",
-    "non-functional-test": "node scripts/bookings_test.js http://localhost:3000/api/rides 10 0"
+    "non-functional-test": "node scripts/bookings_test.js http://localhost:3000/api/rides 10 0",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [
     "rideshare",
@@ -30,6 +34,8 @@
     "socket.io": "^4.6.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "eslint": "^10.4.0",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.8.3"
   }
 }
